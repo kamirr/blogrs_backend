@@ -16,7 +16,11 @@ impl StaticContent {
         }
     }
 
-    pub fn fetch(&mut self, file: String) -> Option<String> {
+    pub fn fetch(&mut self, mut file: String) -> Option<String> {
+        if file == "/" {
+            file = "/index.html".to_string();
+        }
+        
         let path = format!("{}{}", self.path, file);
         let mut res: Option<String> = None;
 
