@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::sync::{Mutex, Arc};
+use std::sync::{RwLock, Arc};
 use std::io::prelude::*;
 use std::path::Path;
 use std::fs::File;
@@ -7,14 +7,14 @@ use std::fs::File;
 #[derive(Clone)]
 pub struct StaticContent {
     path: String,
-    cache: Arc<Mutex<HashMap<String, String>>>
+    cache: Arc<RwLock<HashMap<String, String>>>
 }
 
 impl StaticContent {
     pub fn new(path: &str) -> Self {
         StaticContent {
             path: path.to_string(),
-            cache: Arc::new(Mutex::new(HashMap::new()))
+            cache: Arc::new(RwLock::new(HashMap::new()))
         }
     }
 
@@ -32,7 +32,7 @@ impl StaticContent {
                 break 'fetching;
             }
 
-            let lock = (*self.cache).lock().unwrap();
+            let lock = (*self.cache).read().unwrap();
             let entry = (*lock).get(&path);
 
             // File is cached – return its contents
@@ -65,7 +65,7 @@ impl StaticContent {
             }
 
             // Load file into cache and return its contents
-            let mut lock = (*self.cache).lock().unwrap();
+            let mut lock = (*self.cache).write().unwrap();
             (*lock).insert(path.clone(), contents.clone());
             drop(lock);
             res = Some(contents);
