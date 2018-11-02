@@ -7,20 +7,17 @@ mod service;
 
 use crate::static_content::StaticContent;
 use hyper::service::service_fn_ok;
-use std::sync::{Mutex, Arc};
 use hyper::rt::Future;
 use hyper::Server;
 
-fn run_server(sc: Arc<Mutex<StaticContent>>) {
+fn run_server(sc: StaticContent) {
     let port = 3000;
     let addr = ([127, 0, 0, 1], port).into();
 
-    let sc = Arc::clone(&sc);
     let new_svc = move || {
-        let sc = Arc::clone(&sc);
+        let sc = sc.clone();
         service_fn_ok(move |req| {
-            let sc = Arc::clone(&sc);
-            service::serve(req, sc)
+            service::serve(req, sc.clone())
         })
     };
 
@@ -32,11 +29,5 @@ fn run_server(sc: Arc<Mutex<StaticContent>>) {
 }
 
 fn main() {
-    run_server(
-        Arc::new(
-            Mutex::new(
-                StaticContent::new("frontend/")
-            )
-        )
-    );
+    run_server(StaticContent::new("frontend/"));
 }

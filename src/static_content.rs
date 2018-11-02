@@ -1,18 +1,20 @@
 use std::collections::HashMap;
+use std::sync::{Mutex, Arc};
 use std::io::prelude::*;
 use std::path::Path;
 use std::fs::File;
 
+#[derive(Clone)]
 pub struct StaticContent {
     path: String,
-    cache: HashMap<String, String>
+    cache: Arc<Mutex<HashMap<String, String>>>
 }
 
 impl StaticContent {
     pub fn new(path: &str) -> Self {
         StaticContent {
             path: path.to_string(),
-            cache: HashMap::new()
+            cache: Arc::new(Mutex::new(HashMap::new()))
         }
     }
 
@@ -20,7 +22,7 @@ impl StaticContent {
         if file == "/" {
             file = "/index.html".to_string();
         }
-        
+
         let path = format!("{}{}", self.path, file);
         let mut res: Option<String> = None;
 
@@ -30,13 +32,17 @@ impl StaticContent {
                 break 'fetching;
             }
 
-            let entry = self.cache.get(&path);
+            let lock = (*self.cache).lock().unwrap();
+            let entry = (*lock).get(&path);
 
             // File is cached – return its contents
             if entry.is_some() {
                 res = Some(entry.unwrap().clone());
                 break 'fetching;
             }
+
+            drop(entry);
+            drop(lock);
 
             // File doesn't exist – return None
             if !Path::new(&path).exists() {
@@ -59,8 +65,10 @@ impl StaticContent {
             }
 
             // Load file into cache and return its contents
-            self.cache.insert(path.clone(), contents);
-            res = Some(self.cache.get(&path).unwrap().clone())
+            let mut lock = (*self.cache).lock().unwrap();
+            (*lock).insert(path.clone(), contents.clone());
+            drop(lock);
+            res = Some(contents);
         }
 
         res

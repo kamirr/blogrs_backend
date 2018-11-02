@@ -1,6 +1,5 @@
 use hyper::{StatusCode, Method, Body, Request, Response};
 use crate::static_content::StaticContent;
-use std::sync::{Mutex, Arc};
 
 fn invalid_request(code: u16) -> Response<Body> {
     Response::builder()
@@ -9,13 +8,11 @@ fn invalid_request(code: u16) -> Response<Body> {
         .unwrap()
 }
 
-fn get(uri: String, cont: Arc<Mutex<StaticContent>>) -> Response<Body> {
+fn get(uri: String, mut cont: StaticContent) -> Response<Body> {
     if uri.starts_with("/dyn/") {
         Response::new(Body::from(uri))
     } else {
-        let mut lock = (*cont).lock().unwrap();
-        let res = (*lock).fetch(uri);
-        drop(lock);
+        let res = cont.fetch(uri);
 
         match res {
             Some(s) => Response::new(Body::from(s)),
@@ -28,7 +25,7 @@ fn put(_: String) -> Response<Body> {
     Response::new(Body::empty())
 }
 
-pub fn serve(req: Request<Body>, cont: Arc<Mutex<StaticContent>>) -> Response<Body> {
+pub fn serve(req: Request<Body>, cont: StaticContent) -> Response<Body> {
     let uri = req.uri().path().to_string();
     let method = req.method();
 
