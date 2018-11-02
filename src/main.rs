@@ -32,5 +32,11 @@ fn run_server(sc: Arc<Mutex<StaticContent>>) {
 }
 
 fn main() {
-    run_server(Arc::new(Mutex::new(StaticContent::new("."))));
+    run_server(
+        Arc::new(
+            Mutex::new(
+                StaticContent::new("frontend/")
+            )
+        )
+    );
 }
