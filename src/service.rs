@@ -10,13 +10,17 @@ fn invalid_request(code: u16) -> Response<Body> {
 }
 
 fn get(uri: String, cont: Arc<Mutex<StaticContent>>) -> Response<Body> {
-    let mut lock = (*cont).lock().unwrap();
-    let res = (*lock).fetch(uri);
-    drop(lock);
+    if uri.starts_with("/dyn/") {
+        Response::new(Body::from(uri))
+    } else {
+        let mut lock = (*cont).lock().unwrap();
+        let res = (*lock).fetch(uri);
+        drop(lock);
 
-    match res {
-        Some(s) => Response::new(Body::from(s)),
-        None => invalid_request(404)
+        match res {
+            Some(s) => Response::new(Body::from(s)),
+            None => invalid_request(404)
+        }
     }
 }
 
