@@ -2,6 +2,7 @@
 
 extern crate hyper;
 
+mod dynamic_content;
 mod static_content;
 mod service;
 
