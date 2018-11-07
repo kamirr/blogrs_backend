@@ -1,5 +1,5 @@
 use hyper::{StatusCode, Method, Body, Request, Response};
-use crate::static_content::StaticContent;
+use crate::content::Content;
 
 fn invalid_request(code: u16) -> Response<Body> {
     Response::builder()
@@ -8,16 +8,16 @@ fn invalid_request(code: u16) -> Response<Body> {
         .unwrap()
 }
 
-fn get(uri: String, mut cont: StaticContent) -> Response<Body> {
-    if uri.starts_with("/dyn/") {
-        Response::new(Body::from(uri))
+fn get(uri: String, mut cont: Content) -> Response<Body> {
+    let res = if uri.starts_with("/dyn/") {
+        cont.dynamic_c.fetch(uri)
     } else {
-        let res = cont.fetch(uri);
+        cont.static_c.fetch(uri)
+    };
 
-        match res {
-            Some(s) => Response::new(Body::from(s)),
-            None => invalid_request(404)
-        }
+    match res {
+        Some(s) => Response::new(Body::from(s)),
+        None => invalid_request(404)
     }
 }
 
@@ -25,7 +25,7 @@ fn put(_: String) -> Response<Body> {
     Response::new(Body::empty())
 }
 
-pub fn serve(req: Request<Body>, cont: StaticContent) -> Response<Body> {
+pub fn serve(req: Request<Body>, cont: Content) -> Response<Body> {
     let uri = req.uri().path().to_string();
     let method = req.method();
 

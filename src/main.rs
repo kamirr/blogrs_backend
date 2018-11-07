@@ -4,21 +4,22 @@ extern crate hyper;
 
 mod dynamic_content;
 mod static_content;
+mod content;
 mod service;
 
-use crate::static_content::StaticContent;
 use hyper::service::service_fn_ok;
+use crate::content::Content;
 use hyper::rt::Future;
 use hyper::Server;
 
-fn run_server(sc: StaticContent) {
+fn run_server(cont: Content) {
     let port = 3000;
     let addr = ([127, 0, 0, 1], port).into();
 
     let new_svc = move || {
-        let sc = sc.clone();
+        let cont = cont.clone();
         service_fn_ok(move |req| {
-            service::serve(req, sc.clone())
+            service::serve(req, cont.clone())
         })
     };
 
@@ -30,5 +31,5 @@ fn run_server(sc: StaticContent) {
 }
 
 fn main() {
-    run_server(StaticContent::new("frontend/"));
+    run_server(Content::new("frontend/"));
 }
