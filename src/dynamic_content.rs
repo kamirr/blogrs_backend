@@ -12,8 +12,14 @@ impl DynamicContent {
         }
     }
 
-    pub fn fetch_post(&mut self, id: &str) -> Option<String> {
-        self.sc.fetch("frontent/templates/entry.html")
+    pub fn fetch_post_templ(&mut self, id: &str) -> Option<String> {
+        match self.sc.fetch("templates/entry.html") {
+            Some(text) => {
+                let text = text.replace("{ID}", &format!("{}", id));
+                Some(text)
+            },
+            None => None
+        }
     }
 
     pub fn fetch(&mut self, file: &str) -> Option<String> {
@@ -27,11 +33,11 @@ impl DynamicContent {
         }
 
         match dirs[1].as_ref() {
-            "post" => {
+            "post_templ" => {
                 if dirs.len() < 3 {
                     None
                 } else {
-                    self.fetch_post(&dirs[2])
+                    self.fetch_post_templ(&dirs[2])
                 }
             },
             _ => None
