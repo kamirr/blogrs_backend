@@ -11,7 +11,7 @@ impl Content {
     pub fn new(path: &str) -> Self {
         Content {
             static_c: static_content::StaticContent::new(path),
-            dynamic_c: dynamic_content::DynamicContent::new()
+            dynamic_c: dynamic_content::DynamicContent::new(path)
         }
     }
 }

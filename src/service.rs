@@ -8,7 +8,7 @@ fn invalid_request(code: u16) -> Response<Body> {
         .unwrap()
 }
 
-fn get(uri: String, mut cont: Content) -> Response<Body> {
+fn get(uri: &str, mut cont: Content) -> Response<Body> {
     let res = if uri.starts_with("/dyn/") {
         cont.dynamic_c.fetch(uri)
     } else {
@@ -30,7 +30,7 @@ pub fn serve(req: Request<Body>, cont: Content) -> Response<Body> {
     let method = req.method();
 
     match method {
-        &Method::GET => get(uri, cont),
+        &Method::GET => get(&uri, cont),
         &Method::PUT => put(uri),
         _ => invalid_request(422)
     }
