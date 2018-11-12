@@ -1,5 +1,6 @@
 #![feature(label_break_value)]
 
+extern crate diesel;
 extern crate hyper;
 
 mod dynamic_content;
@@ -11,6 +12,20 @@ use hyper::service::service_fn_ok;
 use crate::content::Content;
 use hyper::rt::Future;
 use hyper::Server;
+
+use diesel::mysql::MysqlConnection;
+use diesel::prelude::*;
+use dotenv::dotenv;
+use std::env;
+
+fn establish_sql_connection() -> MysqlConnection {
+    dotenv().ok();
+
+    let database_url = env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be set");
+    MysqlConnection::establish(&database_url)
+        .expect(&format!("Error connecting to {}", database_url))
+}
 
 fn run_server(cont: Content) {
     let port = 3000;
@@ -31,5 +46,6 @@ fn run_server(cont: Content) {
 }
 
 fn main() {
+    let mut _connection = establish_sql_connection();
     run_server(Content::new("frontend/"));
 }
