@@ -8,6 +8,7 @@ extern crate hyper;
 
 mod dynamic_content;
 mod static_content;
+mod create_post;
 mod connection;
 mod content;
 mod service;
@@ -39,6 +40,6 @@ fn run_server(cont: Content) {
 }
 
 fn main() {
-    let mut _connection = establish_sql_connection();
+    let _connection = establish_sql_connection();
     run_server(Content::new("frontend/"));
 }
