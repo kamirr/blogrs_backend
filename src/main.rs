@@ -1,31 +1,24 @@
 #![feature(label_break_value)]
+#![allow(proc_macro_derive_resolution_fallback)]
 
+#[macro_use]
 extern crate diesel;
+extern crate dotenv;
 extern crate hyper;
 
 mod dynamic_content;
 mod static_content;
+mod connection;
 mod content;
 mod service;
+mod schema;
+mod models;
 
+use self::connection::establish_sql_connection;
 use hyper::service::service_fn_ok;
 use crate::content::Content;
 use hyper::rt::Future;
 use hyper::Server;
-
-use diesel::mysql::MysqlConnection;
-use diesel::prelude::*;
-use dotenv::dotenv;
-use std::env;
-
-fn establish_sql_connection() -> MysqlConnection {
-    dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
-    MysqlConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url))
-}
 
 fn run_server(cont: Content) {
     let port = 3000;
