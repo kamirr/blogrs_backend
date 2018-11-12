@@ -3,7 +3,7 @@ pub use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
 
-fn establish_sql_connection() -> MysqlConnection {
+pub fn establish_sql_connection() -> MysqlConnection {
     dotenv().ok();
 
     let database_url = env::var("DATABASE_URL")
