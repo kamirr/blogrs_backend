@@ -8,7 +8,7 @@ extern crate hyper;
 
 mod dynamic_content;
 mod static_content;
-mod create_post;
+mod manage_posts;
 mod connection;
 mod content;
 mod service;
