@@ -25,11 +25,12 @@ pub fn get_salt() -> String {
         arr.push(rand::random::<u8>());
     }
 
-    arr
+    let res = arr
         .iter()
         .map(|n| format!("{:X?}", n))
         .collect::<Vec<String>>()
-        .join("")
-}
+        .join("");
 
-//pub fn login(key)
+    fs::write("salt.txt", &res).unwrap();
+    res
+}
