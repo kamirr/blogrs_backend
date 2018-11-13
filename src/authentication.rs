@@ -55,6 +55,11 @@ pub fn random_hex(len: usize) -> String {
 pub fn get_salt() -> String {
     let res = random_hex(124);
     fs::write("salt.txt", &res).unwrap();
+
+    //Helper; to be removed later on
+    let salted = format!("{}{}", current_pass(), current_salt());
+    println!("{}", hash_text(&salted));
+
     res
 }
 
