@@ -26,8 +26,6 @@ impl DynamicContent {
         let mut dirs: Vec<String> = file.split("/").map(|s| s.to_string()).collect();
         dirs.remove(0);
 
-        println!("{:?}", dirs);
-
         if dirs.len() < 2 {
             return None;
         }
