@@ -16,13 +16,16 @@ pub fn create_post<'a>(conn: &MysqlConnection, title: &'a str, body: &'a str) {
         .expect("Couldn't insert post!");
 }
 
-pub fn fetch_post(conn: &MysqlConnection) -> Post {
+pub fn fetch_post(conn: &MysqlConnection, identifier: u64) -> Option<Post> {
     use super::schema::posts::dsl::*;
 
-    let result = posts
-        .limit(1)
+    let results = posts
+        .filter(id.eq(identifier))
         .load::<Post>(conn)
         .expect("Error loading posts");
 
-    result[0].clone()
+    match results.len() {
+        1 => Some(results[0].clone()),
+        _ => None
+    }
 }
