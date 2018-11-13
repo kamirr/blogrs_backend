@@ -1,6 +1,6 @@
 use super::schema::posts;
 
-#[derive(Queryable, Clone)]
+#[derive(Queryable, Clone, Debug)]
 pub struct Post {
     pub id: u64,
     pub title: String,
