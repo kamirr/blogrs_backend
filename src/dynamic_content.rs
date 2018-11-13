@@ -1,4 +1,5 @@
 use crate::static_content::StaticContent;
+use crate::authentication::*;
 
 #[derive(Clone)]
 pub struct DynamicContent {
@@ -36,6 +37,16 @@ impl DynamicContent {
                     None
                 } else {
                     self.fetch_post_templ(&dirs[2])
+                }
+            },
+            "salt" => {
+                Some(get_salt())
+            },
+            "login" => {
+                if dirs.len() < 3 {
+                    None
+                } else {
+                    login(&dirs[2])
                 }
             },
             _ => None
