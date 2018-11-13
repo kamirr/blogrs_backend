@@ -25,6 +25,16 @@ pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new
         .execute(conn)
 }
 
+pub fn delete_post(conn: &MysqlConnection, identifier: u64) -> QueryResult<usize> {
+    use crate::schema::posts::dsl::*;
+    diesel::delete(
+            posts.filter(
+                id.eq(identifier)
+            )
+        )
+        .execute(conn)
+}
+
 pub fn fetch_post(conn: &MysqlConnection, identifier: u64) -> Option<Post> {
     use super::schema::posts::dsl::*;
 
