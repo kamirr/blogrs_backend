@@ -5,6 +5,7 @@
 extern crate diesel;
 extern crate dotenv;
 extern crate hyper;
+extern crate sha2;
 
 mod dynamic_content;
 mod static_content;
