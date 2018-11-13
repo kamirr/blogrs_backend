@@ -1,8 +1,8 @@
-pub use diesel::mysql::MysqlConnection;
 use crate::models::{Post, NewPost};
-pub use diesel::prelude::*;
+use diesel::mysql::MysqlConnection;
+use diesel::prelude::*;
 
-pub fn create_post<'a>(conn: &MysqlConnection, title: &'a str, body: &'a str) {
+pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> QueryResult<usize> {
     use super::schema::posts;
 
     let new_post = NewPost {
@@ -13,7 +13,16 @@ pub fn create_post<'a>(conn: &MysqlConnection, title: &'a str, body: &'a str) {
     diesel::insert_into(posts::table)
         .values(&new_post)
         .execute(conn)
-        .expect("Couldn't insert post!");
+}
+
+pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> QueryResult<usize> {
+    use crate::schema::posts::dsl::*;
+    diesel::update(posts.find(id))
+        .set((
+            body.eq(new_body),
+            title.eq(new_title)
+        ))
+        .execute(conn)
 }
 
 pub fn fetch_post(conn: &MysqlConnection, identifier: u64) -> Option<Post> {
@@ -21,11 +30,27 @@ pub fn fetch_post(conn: &MysqlConnection, identifier: u64) -> Option<Post> {
 
     let results = posts
         .filter(id.eq(identifier))
-        .load::<Post>(conn)
-        .expect("Error loading posts");
+        .load::<Post>(conn);
 
-    match results.len() {
-        1 => Some(results[0].clone()),
-        _ => None
+    match results {
+        Ok(res) =>
+            match res.len() {
+                1 => Some(res[0].clone()),
+                _ => None
+            },
+        Err(_) => None
+    }
+}
+
+pub fn all_ids(conn: &MysqlConnection) -> Vec<u64> {
+    use super::schema::posts::dsl::*;
+
+    let res = posts
+        .select(id)
+        .load::<u64>(conn);
+
+    match res {
+        Ok(res) => res,
+        Err(_) => vec![]
     }
 }
