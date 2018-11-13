@@ -11,6 +11,7 @@ extern crate sha2;
 
 mod dynamic_content;
 mod static_content;
+mod authentication;
 mod manage_posts;
 mod run_server;
 mod connection;
