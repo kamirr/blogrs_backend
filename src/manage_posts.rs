@@ -17,7 +17,7 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> QueryResu
 
 pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> QueryResult<usize> {
     use crate::schema::posts::dsl::*;
-    diesel::update(posts.find(id))
+    diesel::update(posts.find(identifier))
         .set((
             body.eq(new_body),
             title.eq(new_title)
