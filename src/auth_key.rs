@@ -35,9 +35,8 @@ fn save_key_in_db(key: &str, conn: &MysqlConnection) {
         title: key.into()
     };
 
-     let should_delete: bool = select(exists(
-        nonrepeating
-            .filter(id.eq(db_key))
+    let should_delete: bool = select(exists(
+            nonrepeating.filter(id.eq(db_key))
         ))
         .get_result(conn)
         .unwrap();
