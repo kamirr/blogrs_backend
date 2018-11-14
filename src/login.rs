@@ -12,7 +12,7 @@ pub struct LoginData {
     pub hash: String
 }
 
-fn test_hash(l_hash: String, p_hash: String, data: LoginData) -> Option<AuthKey> {
+fn test_hash(l_hash: String, p_hash: String, data: LoginData, conn: &MysqlConnection) -> Option<AuthKey> {
     let mut hasher = Sha224::new();
     hasher.input(format!("{}{}", l_hash, p_hash));
 
@@ -30,18 +30,17 @@ fn test_hash(l_hash: String, p_hash: String, data: LoginData) -> Option<AuthKey>
         .collect::<String>();
 
     match client_hash == local_hash {
-        true => Some(generate_auth_key()),
+        true => Some(generate_auth_key(conn)),
         false => None
     }
 }
 
-fn fetch_from_nonrepeating(key: &str, conn: &State<SafeConnection>) -> Result<Vec<Nonrepeating>, ()> {
+fn fetch_from_nonrepeating(key: &str, conn: &MysqlConnection) -> Result<Vec<Nonrepeating>, ()> {
     use super::schema::nonrepeating::dsl::*;
-    let lock = (*conn).lock().unwrap();
 
     let res = nonrepeating
         .filter(id.eq(key))
-        .load::<Nonrepeating>(&*lock);
+        .load::<Nonrepeating>(conn);
 
     match res {
         Ok(v) => Ok(v),
@@ -51,21 +50,24 @@ fn fetch_from_nonrepeating(key: &str, conn: &State<SafeConnection>) -> Result<Ve
 
 #[post("/", data = "<data>", format = "json")]
 pub fn login(data: Json<LoginData>, conn: State<SafeConnection>) -> Option<AuthKey> {
-    let login_hash = match fetch_from_nonrepeating("login_hash", &conn) {
+    let lock = (*conn).lock().unwrap();
+    let conn = &*lock;
+
+    let login_hash = match fetch_from_nonrepeating("login_hash", conn) {
         Ok(hash) => match hash.len() {
             1 => hash[0].title.clone(),
-            _ => return Some(generate_auth_key())
+            _ => return Some(generate_auth_key(conn))
         },
         Err(_) => return None
     };
 
-    let pass_hash = match fetch_from_nonrepeating("pass_hash", &conn) {
+    let pass_hash = match fetch_from_nonrepeating("pass_hash", conn) {
         Ok(hash) => match hash.len() {
             1 => hash[0].title.clone(),
-            _ => return Some(generate_auth_key())
+            _ => return Some(generate_auth_key(conn))
         },
         Err(_) => return None
     };
 
-    test_hash(login_hash, pass_hash, data.into_inner())
+    test_hash(login_hash, pass_hash, data.into_inner(), conn)
 }
