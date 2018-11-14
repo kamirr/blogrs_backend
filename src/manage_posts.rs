@@ -2,6 +2,7 @@ use crate::models::{Post, NewPost};
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 
+#[allow(dead_code)]
 pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> QueryResult<usize> {
     use super::schema::posts;
 
@@ -15,6 +16,7 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> QueryResu
         .execute(conn)
 }
 
+#[allow(dead_code)]
 pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> QueryResult<usize> {
     use crate::schema::posts::dsl::*;
     diesel::update(posts.find(identifier))
@@ -25,6 +27,7 @@ pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new
         .execute(conn)
 }
 
+#[allow(dead_code)]
 pub fn delete_post(conn: &MysqlConnection, identifier: u64) -> QueryResult<usize> {
     use crate::schema::posts::dsl::*;
     diesel::delete(

@@ -1,6 +1,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #![feature(label_break_value)]
 #![feature(slice_concat_ext)]
+
 #![allow(proc_macro_derive_resolution_fallback)]
 
 #[macro_use] extern crate serde_derive;
