@@ -17,8 +17,10 @@ mod manage_posts;
 mod connection;
 mod posts_info;
 mod html_post;
+mod auth_key;
 mod schema;
 mod models;
+mod login;
 
 fn main() {
     use crate::connection::establish_sql_connection;
@@ -29,5 +31,6 @@ fn main() {
         .mount("/", StaticFiles::from("frontend/"))
         .mount("/posts", routes![posts_info::posts_info])
         .mount("/posts", routes![html_post::fetch_html_post])
+        .mount("/login", routes![login::login])
         .launch();
 }
