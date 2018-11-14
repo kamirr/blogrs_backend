@@ -4,6 +4,7 @@ use crate::auth_key::*;
 
 use rocket_contrib::json::Json;
 use sha2::{Sha224, Digest};
+use rocket::http::Cookies;
 use diesel::prelude::*;
 use rocket::State;
 
@@ -66,12 +67,12 @@ fn test_login(data: Json<LoginData>, conn: &MysqlConnection) -> bool {
 }
 
 #[post("/", data = "<data>", format = "json")]
-pub fn login(data: Json<LoginData>, conn: State<SafeConnection>) -> Option<AuthKey> {
+pub fn login(data: Json<LoginData>, conn: State<SafeConnection>, mut cookies: Cookies) -> Option<AuthKey> {
     let conn: &SafeConnection = &conn;
     let lock = (*conn).lock().unwrap();
 
     if test_login(data, &*lock) {
-        Some(generate_auth_key(&*lock))
+        Some(generate_auth_key(&*lock, &mut cookies))
     } else {
         None
     }
