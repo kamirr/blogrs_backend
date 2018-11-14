@@ -4,14 +4,14 @@ use diesel::prelude::*;
 
 #[allow(dead_code)]
 pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> QueryResult<usize> {
-    use super::schema::posts;
+    use super::schema::posts::dsl::posts;
 
     let new_post = NewPost {
         title,
         body,
     };
 
-    diesel::insert_into(posts::table)
+    diesel::insert_into(posts)
         .values(&new_post)
         .execute(conn)
 }
@@ -19,6 +19,7 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> QueryResu
 #[allow(dead_code)]
 pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> QueryResult<usize> {
     use crate::schema::posts::dsl::*;
+
     diesel::update(posts.find(identifier))
         .set((
             body.eq(new_body),
@@ -30,6 +31,7 @@ pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new
 #[allow(dead_code)]
 pub fn delete_post(conn: &MysqlConnection, identifier: u64) -> QueryResult<usize> {
     use crate::schema::posts::dsl::*;
+
     diesel::delete(
             posts.filter(
                 id.eq(identifier)
