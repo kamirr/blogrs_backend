@@ -64,7 +64,3 @@ pub fn all_ids(conn: &MysqlConnection) -> Vec<u64> {
         Err(_) => vec![]
     }
 }
-
-pub fn check_for_id(conn: &MysqlConnection, id: u64) -> bool {
-    all_ids(conn).contains(&id)
-}
