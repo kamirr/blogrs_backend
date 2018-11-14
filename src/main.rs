@@ -13,7 +13,6 @@ extern crate dotenv;
 extern crate serde;
 extern crate rand;
 
-mod authentication;
 mod manage_posts;
 mod connection;
 mod posts_info;
