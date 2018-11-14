@@ -67,13 +67,14 @@ fn test_login(data: Json<LoginData>, conn: &MysqlConnection) -> bool {
 }
 
 #[post("/", data = "<data>", format = "json")]
-pub fn login(data: Json<LoginData>, conn: State<SafeConnection>, mut cookies: Cookies) -> Option<AuthKey> {
+pub fn login(data: Json<LoginData>, conn: State<SafeConnection>, mut cookies: Cookies) -> String {
     let conn: &SafeConnection = &conn;
     let lock = (*conn).lock().unwrap();
 
     if test_login(data, &*lock) {
-        Some(generate_auth_key(&*lock, &mut cookies))
+        generate_auth_key(&*lock, &mut cookies);
+        "success".into()
     } else {
-        None
+        "fail".into()
     }
 }

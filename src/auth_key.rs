@@ -36,7 +36,7 @@ fn save_key_in_db(key: &str, conn: &MysqlConnection) {
         title: key.into()
     };
 
-    let should_delete: bool = select(exists(
+    let should_delete = select(exists(
             nonrepeating.filter(id.eq(db_key))
         ))
         .get_result(conn)
@@ -64,10 +64,8 @@ fn save_key_in_cookie(key: &str, cookies: &mut Cookies) {
     cookies.add_private(cookie);
 }
 
-pub fn generate_auth_key(conn: &MysqlConnection, cookies: &mut Cookies) -> AuthKey {
+pub fn generate_auth_key(conn: &MysqlConnection, cookies: &mut Cookies) {
     let res = random_hex(64);
     save_key_in_db(&res, conn);
     save_key_in_cookie(&res, cookies);
-
-    res
 }
