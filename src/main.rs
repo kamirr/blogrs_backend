@@ -24,6 +24,6 @@ fn main() {
     rocket::ignite()
         .manage(establish_sql_connection())
         .mount("/", StaticFiles::from("frontend/"))
-        .mount("/", routes![html_post::fetch_html_post])
+        .mount("/post", routes![html_post::fetch_html_post])
         .launch();
 }
