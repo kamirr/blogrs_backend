@@ -35,21 +35,23 @@ fn test_hash(l_hash: String, p_hash: String, data: LoginData) -> Option<AuthKey>
     }
 }
 
-#[post("/", data = "<data>", format = "json")]
-pub fn login(data: Json<LoginData>, conn: State<SafeConnection>) -> Option<AuthKey> {
+fn fetch_from_nonrepeating(key: &str, conn: &State<SafeConnection>) -> Result<Vec<Nonrepeating>, ()> {
     use super::schema::nonrepeating::dsl::*;
-
     let lock = (*conn).lock().unwrap();
 
-    let login_hash = nonrepeating
-        .filter(id.eq("login_hash"))
+    let res = nonrepeating
+        .filter(id.eq(key))
         .load::<Nonrepeating>(&*lock);
 
-    let pass_hash = nonrepeating
-        .filter(id.eq("pass_hash"))
-        .load::<Nonrepeating>(&*lock);
+    match res {
+        Ok(v) => Ok(v),
+        _ => Err(())
+    }
+}
 
-    let login_hash = match login_hash {
+#[post("/", data = "<data>", format = "json")]
+pub fn login(data: Json<LoginData>, conn: State<SafeConnection>) -> Option<AuthKey> {
+    let login_hash = match fetch_from_nonrepeating("login_hash", &conn) {
         Ok(hash) => match hash.len() {
             1 => hash[0].title.clone(),
             _ => return Some(generate_auth_key())
@@ -57,7 +59,7 @@ pub fn login(data: Json<LoginData>, conn: State<SafeConnection>) -> Option<AuthK
         Err(_) => return None
     };
 
-    let pass_hash = match pass_hash {
+    let pass_hash = match fetch_from_nonrepeating("pass_hash", &conn) {
         Ok(hash) => match hash.len() {
             1 => hash[0].title.clone(),
             _ => return Some(generate_auth_key())
