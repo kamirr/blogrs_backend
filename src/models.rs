@@ -1,3 +1,4 @@
+use super::schema::nonrepeating;
 use super::schema::posts;
 
 #[derive(Queryable, Clone, Debug)]
@@ -12,4 +13,11 @@ pub struct Post {
 pub struct NewPost<'a> {
     pub title: &'a str,
     pub body: &'a str,
+}
+
+#[derive(Queryable, Insertable, Clone, Debug)]
+#[table_name="nonrepeating"]
+pub struct Nonrepeating {
+    pub id: String,
+    pub title: String
 }
