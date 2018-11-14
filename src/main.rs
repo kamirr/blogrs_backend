@@ -18,10 +18,12 @@ mod models;
 mod post;
 
 fn main() {
+    use crate::connection::establish_sql_connection;
     use rocket_contrib::serve::StaticFiles;
 
     rocket::ignite()
+        .manage(establish_sql_connection())
         .mount("/", StaticFiles::from("frontend/"))
-        .mount("/", routes![post::post_templ])
+        .mount("/", routes![post::html_post])
         .launch();
 }
