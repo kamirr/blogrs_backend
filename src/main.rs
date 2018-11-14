@@ -12,7 +12,6 @@ extern crate serde_json;
 extern crate dotenv;
 extern crate serde;
 extern crate rand;
-extern crate sha2;
 
 mod authentication;
 mod manage_posts;
