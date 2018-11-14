@@ -1,0 +1,4 @@
+CREATE TABLE nonrepeating (
+  id VARCHAR(256) NULL PRIMARY KEY,
+  title TEXT NOT NULL
+)
