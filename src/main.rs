@@ -3,16 +3,20 @@
 #![feature(slice_concat_ext)]
 #![allow(proc_macro_derive_resolution_fallback)]
 
+#[macro_use] extern crate serde_derive;
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate rocket;
 extern crate rocket_contrib;
+extern crate serde_json;
 extern crate dotenv;
+extern crate serde;
 extern crate rand;
 extern crate sha2;
 
 mod authentication;
 mod manage_posts;
 mod connection;
+mod posts_info;
 mod html_post;
 mod schema;
 mod models;
@@ -25,5 +29,6 @@ fn main() {
         .manage(establish_sql_connection())
         .mount("/", StaticFiles::from("frontend/"))
         .mount("/posts", routes![html_post::fetch_html_post])
+        .mount("/posts", routes![posts_info::posts_info])
         .launch();
 }
