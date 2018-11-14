@@ -23,29 +23,28 @@ fn random_hex(count: u32) -> String {
     res
 }
 
-pub fn generate_auth_key(conn: &MysqlConnection) -> AuthKey {
+fn save_key_in_db(key: &str, conn: &MysqlConnection) {
     use super::schema::nonrepeating::dsl::*;
     use diesel::dsl::exists;
     use diesel::dsl::select;
 
-    let res = random_hex(64);
-    let key = "current_auth";
+    let db_key = "current_auth";
 
     let to_insert = Nonrepeating {
-        id: key.to_string(),
-        title: res.clone()
+        id: db_key.to_string(),
+        title: key.into()
     };
 
      let should_delete: bool = select(exists(
         nonrepeating
-            .filter(id.eq(key))
+            .filter(id.eq(db_key))
         ))
         .get_result(conn)
         .unwrap();
 
     if should_delete {
         diesel::delete(nonrepeating.filter(
-                id.eq(key)
+                id.eq(db_key)
             ))
             .execute(conn)
             .unwrap();
@@ -55,6 +54,11 @@ pub fn generate_auth_key(conn: &MysqlConnection) -> AuthKey {
         .values(&to_insert)
         .execute(conn)
         .unwrap();
+}
+
+pub fn generate_auth_key(conn: &MysqlConnection) -> AuthKey {
+    let res = random_hex(64);
+    save_key_in_db(&res, conn);
 
     res
 }
