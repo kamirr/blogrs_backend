@@ -16,7 +16,7 @@ fn parse_entry_templ(entry: &String, id: u64, conn: &MysqlConnection) -> Option<
 }
 
 #[get("/post/<id>")]
-pub fn html_post(id: u64, conn: State<SafeConnection>) -> Option<String> {
+pub fn fetch_html_post(id: u64, conn: State<SafeConnection>) -> Option<String> {
     let entry = "frontend/templates/entry.html";
     match std::fs::read_to_string(entry) {
         Ok(text) => {

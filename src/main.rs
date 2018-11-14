@@ -13,9 +13,9 @@ extern crate sha2;
 mod authentication;
 mod manage_posts;
 mod connection;
+mod html_post;
 mod schema;
 mod models;
-mod post;
 
 fn main() {
     use crate::connection::establish_sql_connection;
@@ -24,6 +24,6 @@ fn main() {
     rocket::ignite()
         .manage(establish_sql_connection())
         .mount("/", StaticFiles::from("frontend/"))
-        .mount("/", routes![post::html_post])
+        .mount("/", routes![html_post::fetch_html_post])
         .launch();
 }
