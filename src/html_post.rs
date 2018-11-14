@@ -1,6 +1,6 @@
-use crate::manage_posts::*;
 use crate::connection::SafeConnection;
 use diesel::mysql::MysqlConnection;
+use crate::manage_posts::*;
 use rocket::State;
 
 fn parse_entry_templ(entry: &String, id: u64, conn: &MysqlConnection) -> Option<String> {
