@@ -2,7 +2,6 @@ use crate::models::{Post, NewPost};
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 
-#[allow(dead_code)]
 pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u64> {
     use diesel::sql_types::{Unsigned, BigInt};
     use super::schema::posts::dsl::posts;
@@ -29,7 +28,6 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u6
     }
 }
 
-#[allow(dead_code)]
 pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> QueryResult<usize> {
     use crate::schema::posts::dsl::*;
 
@@ -41,7 +39,6 @@ pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new
         .execute(conn)
 }
 
-#[allow(dead_code)]
 pub fn delete_post(conn: &MysqlConnection, identifier: u64) -> QueryResult<usize> {
     use crate::schema::posts::dsl::*;
 
