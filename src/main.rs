@@ -17,25 +17,25 @@ extern crate sha2;
 mod manage_posts;
 mod connection;
 mod posts_info;
-mod html_post;
 mod auth_key;
 mod schema;
 mod models;
 mod logout;
 mod login;
+mod post;
 
 fn main() {
     use crate::connection::establish_sql_connection;
     use rocket_contrib::serve::StaticFiles;
 
     let posts_routes = routes![
-        posts_info::posts_info,
-        html_post::fetch_html_post
+        posts_info::posts_info
     ];
 
     let api_routes = routes![
         login::login,
-        logout::logout
+        logout::logout,
+        post::post
     ];
 
     let static_route = StaticFiles::from("frontend/");
