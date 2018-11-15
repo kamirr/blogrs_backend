@@ -4,18 +4,29 @@ use diesel::prelude::*;
 
 #[allow(dead_code)]
 pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u64> {
+    use diesel::sql_types::{Unsigned, BigInt};
     use super::schema::posts::dsl::posts;
+    use diesel::select;
+
+    no_arg_sql_function!(last_insert_id, Unsigned<BigInt>, "");
 
     let new_post = NewPost {
         title,
         body,
     };
 
-    diesel::insert_into(posts)
+    let res = diesel::insert_into(posts)
         .values(&new_post)
         .execute(conn);
 
-    Some(0) // placeholder
+    match res {
+        Ok(_) => Some(select(last_insert_id)
+            .load::<u64>(conn)
+            .unwrap()
+            [0]
+        ),
+        _ => None
+    }
 }
 
 #[allow(dead_code)]
