@@ -10,13 +10,15 @@ use rocket::State;
 #[derive(Serialize)]
 pub struct Status {
     pub status: String,
-    pub key: AuthKey
+    pub key: AuthKey,
+    pub id: u64
 }
 
 impl Status {
-    pub fn new_ok(status: &str, conn: &MysqlConnection) -> Self {
+    pub fn new_ok(status: &str, id: u64, conn: &MysqlConnection) -> Self {
         Status {
             status: status.to_string(),
+            id: id,
             key: generate_auth_key(conn)
         }
     }
@@ -24,6 +26,7 @@ impl Status {
     pub fn new_err(status: &str) -> Self {
         Status {
             status: status.to_string(),
+            id: 0,
             key: "".to_string()
         }
     }
@@ -41,7 +44,7 @@ pub fn new(key: AuthKey, post: Json<WebPost>, conn: State<SafeConnection>) -> Js
     let post = post.into_inner();
 
     Json(match create_post(&*lock, &post.title, &post.body) {
-        Ok(_) => Status::new_ok("success", &*lock),
-        Err(_) => Status::new_err("DB error")
+        Some(id) => Status::new_ok("success", id, &*lock),
+        _ => Status::new_err("DB error")
     })
 }

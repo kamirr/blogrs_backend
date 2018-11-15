@@ -3,7 +3,7 @@ use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 
 #[allow(dead_code)]
-pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> QueryResult<usize> {
+pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u64> {
     use super::schema::posts::dsl::posts;
 
     let new_post = NewPost {
@@ -13,7 +13,9 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> QueryResu
 
     diesel::insert_into(posts)
         .values(&new_post)
-        .execute(conn)
+        .execute(conn);
+
+    Some(0) // placeholder
 }
 
 #[allow(dead_code)]
