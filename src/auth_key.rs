@@ -56,16 +56,7 @@ fn save_key_in_db(key: &str, conn: &MysqlConnection) {
         .unwrap();
 }
 
-fn save_key_in_cookie(key: &str, cookies: &mut Cookies) {
-    let cookie = Cookie
-        ::build("auth_key", key.to_owned())
-        .secure(true)
-        .finish();
-    cookies.add_private(cookie);
-}
-
-pub fn generate_auth_key(conn: &MysqlConnection, cookies: &mut Cookies) {
+pub fn generate_auth_key(conn: &MysqlConnection) {
     let res = random_hex(64);
     save_key_in_db(&res, conn);
-    save_key_in_cookie(&res, cookies);
 }
