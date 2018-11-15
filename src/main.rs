@@ -16,6 +16,7 @@ extern crate sha2;
 
 mod manage_posts_table;
 mod set_login_param;
+mod manage_posts;
 mod connection;
 mod auth_key;
 mod webpost;
@@ -25,7 +26,6 @@ mod logout;
 mod login;
 mod post;
 mod meta;
-mod new;
 
 fn main() {
     use crate::connection::establish_sql_connection;
@@ -36,7 +36,7 @@ fn main() {
         logout::logout,
         meta::meta,
         post::post,
-        new::new,
+        manage_posts::new,
         set_login_param::set_login,
         set_login_param::set_password
     ];
