@@ -55,7 +55,9 @@ fn save_key_in_db(key: &str, conn: &MysqlConnection) {
         .unwrap();
 }
 
-pub fn generate_auth_key(conn: &MysqlConnection) {
-    let res = random_hex(64);
+pub fn generate_auth_key(conn: &MysqlConnection) -> AuthKey {
+    let res = random_hex(6);
     save_key_in_db(&res, conn);
+
+    res
 }

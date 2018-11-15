@@ -7,16 +7,21 @@ use sha2::{Sha224, Digest};
 use diesel::prelude::*;
 use rocket::State;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 pub struct LoginData {
     pub hash: String
 }
 
-fn test_hash(l_hash: String, p_hash: String, data: LoginData) -> bool {
+#[derive(Serialize)]
+pub struct ApiKey {
+    pub key: AuthKey
+}
+
+fn test_hash(l_hash: String, p_hash: String, data: String) -> bool {
     let mut hasher = Sha224::new();
     hasher.input(format!("{}{}", l_hash, p_hash));
 
-    let client_hash = data.hash;
+    let client_hash = data;
     let local_hash = hasher
         .result()
         .iter()
@@ -29,7 +34,7 @@ fn test_hash(l_hash: String, p_hash: String, data: LoginData) -> bool {
         })
         .collect::<String>();
 
-    client_hash == local_hash
+    client_hash == local_hash[0..12]
 }
 
 fn fetch_from_nonrepeating(key: &str, conn: &MysqlConnection) -> Result<Vec<Nonrepeating>, ()> {
@@ -45,7 +50,7 @@ fn fetch_from_nonrepeating(key: &str, conn: &MysqlConnection) -> Result<Vec<Nonr
     }
 }
 
-fn test_login(data: Json<LoginData>, conn: &MysqlConnection) -> bool {
+fn test_login(hash: String, conn: &MysqlConnection) -> bool {
     let login_hash = match fetch_from_nonrepeating("login_hash", conn) {
         Ok(hash) => match hash.len() {
             1 => hash[0].title.clone(),
@@ -62,18 +67,21 @@ fn test_login(data: Json<LoginData>, conn: &MysqlConnection) -> bool {
         Err(_) => return false
     };
 
-    test_hash(login_hash, pass_hash, data.into_inner())
+    test_hash(login_hash, pass_hash, hash)
 }
 
-#[post("/", data = "<data>", format = "json")]
-pub fn login(data: Json<LoginData>, conn: State<SafeConnection>) -> String {
+#[get("/<hash>")]
+pub fn login(hash: String, conn: State<SafeConnection>) -> Json<ApiKey> {
     let conn: &SafeConnection = &conn;
     let lock = (*conn).lock().unwrap();
 
-    if test_login(data, &*lock) {
-        generate_auth_key(&*lock);
-        "success".into()
+    if test_login(hash, &*lock) {
+        Json(ApiKey{
+            key: generate_auth_key(&*lock)
+        })
     } else {
-        "error".into()
+        Json(ApiKey{
+            key: "".into()
+        })
     }
 }
