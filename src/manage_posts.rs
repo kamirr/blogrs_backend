@@ -8,7 +8,7 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u6
     use super::schema::posts::dsl::posts;
     use diesel::select;
 
-    no_arg_sql_function!(last_insert_id, Unsigned<BigInt>, "");
+    no_arg_sql_function!(last_insert_id, Unsigned<BigInt>, "Returns ID of the last inserted post");
 
     let new_post = NewPost {
         title,
