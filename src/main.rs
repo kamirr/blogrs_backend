@@ -24,6 +24,7 @@ mod logout;
 mod login;
 mod post;
 mod meta;
+mod new;
 
 fn main() {
     use crate::connection::establish_sql_connection;
@@ -33,7 +34,8 @@ fn main() {
         login::login,
         logout::logout,
         meta::meta,
-        post::post
+        post::post,
+        new::new
     ];
 
     let static_route = StaticFiles::from("frontend/");
