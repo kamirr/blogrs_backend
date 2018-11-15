@@ -28,12 +28,22 @@ fn main() {
     use crate::connection::establish_sql_connection;
     use rocket_contrib::serve::StaticFiles;
 
+    let posts_routes = routes![
+        posts_info::posts_info,
+        html_post::fetch_html_post
+    ];
+
+    let api_routes = routes![
+        login::login,
+        logout::logout
+    ];
+
+    let static_route = StaticFiles::from("frontend/");
+
     rocket::ignite()
         .manage(establish_sql_connection())
-        .mount("/posts", routes![posts_info::posts_info])
-        .mount("/posts", routes![html_post::fetch_html_post])
-        .mount("/api", routes![login::login])
-        .mount("/api", routes![logout::logout])
-        .mount("/", StaticFiles::from("frontend/"))
+        .mount("/posts", posts_routes)
+        .mount("/api", api_routes)
+        .mount("/", static_route)
         .launch();
 }
