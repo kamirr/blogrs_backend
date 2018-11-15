@@ -1,6 +1,5 @@
 use crate::models::Nonrepeating;
 
-use rocket::http::{Cookie, Cookies};
 use diesel::mysql::MysqlConnection;
 use diesel::insert_into;
 use diesel::prelude::*;
