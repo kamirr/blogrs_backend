@@ -70,7 +70,7 @@ fn test_login(hash: String, conn: &MysqlConnection) -> bool {
     test_hash(login_hash, pass_hash, hash)
 }
 
-#[get("/<hash>")]
+#[get("/login/<hash>")]
 pub fn login(hash: String, conn: State<SafeConnection>) -> Json<ApiKey> {
     let conn: &SafeConnection = &conn;
     let lock = (*conn).lock().unwrap();
