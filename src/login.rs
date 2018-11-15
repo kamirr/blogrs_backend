@@ -13,8 +13,25 @@ pub struct LoginData {
 }
 
 #[derive(Serialize)]
-pub struct ApiKey {
+pub struct LoginStatus {
+    pub status: String,
     pub key: AuthKey
+}
+
+impl LoginStatus {
+    pub fn new_ok(status: &str, conn: &MysqlConnection) -> Self {
+        LoginStatus {
+            status: status.to_string(),
+            key: generate_auth_key(conn)
+        }
+    }
+
+    pub fn new_err(status: &str) -> Self {
+        LoginStatus {
+            status: status.to_string(),
+            key: "".to_string()
+        }
+    }
 }
 
 fn test_hash(l_hash: String, p_hash: String, data: String) -> bool {
@@ -71,17 +88,13 @@ fn test_login(hash: String, conn: &MysqlConnection) -> bool {
 }
 
 #[get("/login/<hash>")]
-pub fn login(hash: String, conn: State<SafeConnection>) -> Json<ApiKey> {
+pub fn login(hash: String, conn: State<SafeConnection>) -> Json<LoginStatus> {
     let conn: &SafeConnection = &conn;
     let lock = (*conn).lock().unwrap();
 
-    if test_login(hash, &*lock) {
-        Json(ApiKey{
-            key: generate_auth_key(&*lock)
-        })
+    Json(if test_login(hash, &*lock) {
+        LoginStatus::new_ok("success", &*lock)
     } else {
-        Json(ApiKey{
-            key: "".into()
-        })
-    }
+        LoginStatus::new_err("error")
+    })
 }
