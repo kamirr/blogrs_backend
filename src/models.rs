@@ -19,5 +19,5 @@ pub struct NewPost<'a> {
 #[table_name="nonrepeating"]
 pub struct Nonrepeating {
     pub id: String,
-    pub title: String
+    pub value: String
 }

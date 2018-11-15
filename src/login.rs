@@ -53,7 +53,7 @@ fn fetch_from_nonrepeating(key: &str, conn: &MysqlConnection) -> Result<Vec<Nonr
 fn test_login(hash: String, conn: &MysqlConnection) -> bool {
     let login_hash = match fetch_from_nonrepeating("login_hash", conn) {
         Ok(hash) => match hash.len() {
-            1 => hash[0].title.clone(),
+            1 => hash[0].value.clone(),
             _ => return true
         },
         Err(_) => return false
@@ -61,7 +61,7 @@ fn test_login(hash: String, conn: &MysqlConnection) -> bool {
 
     let pass_hash = match fetch_from_nonrepeating("pass_hash", conn) {
         Ok(hash) => match hash.len() {
-            1 => hash[0].title.clone(),
+            1 => hash[0].value.clone(),
             _ => return true
         },
         Err(_) => return false

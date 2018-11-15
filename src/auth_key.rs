@@ -32,7 +32,7 @@ fn save_key_in_db(key: &str, conn: &MysqlConnection) {
 
     let to_insert = Nonrepeating {
         id: db_key.to_string(),
-        title: key.into()
+        value: key.into()
     };
 
     let should_delete = select(exists(
@@ -65,7 +65,7 @@ pub fn verify_auth_key(key: AuthKey, conn: &MysqlConnection) -> bool {
     let ok = select(exists(
             nonrepeating
                 .filter(id.eq(db_key))
-                .filter(title.eq(key))
+                .filter(value.eq(key))
         ))
         .get_result(conn)
         .unwrap();

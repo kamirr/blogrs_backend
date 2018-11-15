@@ -27,7 +27,7 @@ fn delete_auth_key_from_db(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
     let removal = diesel::delete(
             nonrepeating
                 .filter(id.eq(db_key))
-                .filter(title.eq(key))
+                .filter(value.eq(key))
         )
         .execute(conn);
 
