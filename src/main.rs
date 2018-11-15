@@ -14,6 +14,7 @@ extern crate serde;
 extern crate rand;
 extern crate sha2;
 
+mod set_login_param;
 mod manage_posts;
 mod connection;
 mod auth_key;
@@ -35,7 +36,9 @@ fn main() {
         logout::logout,
         meta::meta,
         post::post,
-        new::new
+        new::new,
+        set_login_param::set_login,
+        set_login_param::set_password
     ];
 
     let static_route = StaticFiles::from("frontend/");
