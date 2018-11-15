@@ -38,6 +38,7 @@ fn main() {
         post::post,
         manage_posts::new,
         manage_posts::update,
+        manage_posts::delete,
         set_login_param::set_login,
         set_login_param::set_password
     ];

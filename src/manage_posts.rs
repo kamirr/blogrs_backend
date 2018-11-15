@@ -65,3 +65,18 @@ pub fn update(key: AuthKey, id: u64, post: Json<WebPost>, conn: State<SafeConnec
         _ => Status::new_err("DB error")
     })
 }
+
+#[get("/delete/<key>/<id>")]
+pub fn delete(key: AuthKey, id: u64, conn: State<SafeConnection>) -> Json<Status> {
+    let conn: &SafeConnection = &conn;
+    let lock = (*conn).lock().unwrap();
+
+    if !verify_auth_key(key, &*lock) {
+        return Json(Status::new_err("not logged in"))
+    }
+
+    Json(match delete_post(&*lock, id) {
+        Ok(_) => Status::new_ok("success", 0, &*lock),
+        Err(_) => Status::new_err("DB error")
+    })
+}
