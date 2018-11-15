@@ -6,20 +6,20 @@ use rocket_contrib::json::Json;
 use rocket::State;
 
 #[derive(Serialize, Deserialize)]
-pub struct PostsInfo {
+pub struct Meta {
     ids: Vec<u64>
 }
 
-impl PostsInfo {
+impl Meta {
     fn from(conn: &MysqlConnection) -> Self {
-        PostsInfo {
+        Meta {
             ids: all_ids(conn)
         }
     }
 }
 
-#[get("/")]
-pub fn posts_info(conn: State<SafeConnection>) -> Json<PostsInfo> {
+#[get("/meta")]
+pub fn meta(conn: State<SafeConnection>) -> Json<Meta> {
     let lock = (*conn).lock().unwrap();
-    Json(PostsInfo::from(&*lock))
+    Json(Meta::from(&*lock))
 }
