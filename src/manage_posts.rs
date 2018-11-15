@@ -48,3 +48,20 @@ pub fn new(key: AuthKey, post: Json<WebPost>, conn: State<SafeConnection>) -> Js
         _ => Status::new_err("DB error")
     })
 }
+
+#[post("/edit/<id>/<key>", data = "<post>", format = "json")]
+pub fn update(id: u64, key: AuthKey, post: Json<WebPost>, conn: State<SafeConnection>) -> Json<Status> {
+    let conn: &SafeConnection = &conn;
+    let lock = (*conn).lock().unwrap();
+
+    if !verify_auth_key(key, &*lock) {
+        return Json(Status::new_err("not logged in"))
+    }
+
+    let post = post.into_inner();
+
+    Json(match update_post(&*lock, id, &post.title, &post.body) {
+        Some(id) => Status::new_ok("success", id, &*lock),
+        _ => Status::new_err("DB error")
+    })
+}

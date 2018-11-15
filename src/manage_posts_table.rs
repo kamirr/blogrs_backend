@@ -28,15 +28,20 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u6
     }
 }
 
-pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> QueryResult<usize> {
+pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> Option<u64> {
     use crate::schema::posts::dsl::*;
 
-    diesel::update(posts.find(identifier))
+    let res = diesel::update(posts.find(identifier))
         .set((
             body.eq(new_body),
             title.eq(new_title)
         ))
-        .execute(conn)
+        .execute(conn);
+
+    match res {
+        Ok(_) => Some(identifier),
+        Err(_) => None
+    }
 }
 
 pub fn delete_post(conn: &MysqlConnection, identifier: u64) -> QueryResult<usize> {
