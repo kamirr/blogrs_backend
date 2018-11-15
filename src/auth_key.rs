@@ -55,6 +55,24 @@ fn save_key_in_db(key: &str, conn: &MysqlConnection) {
         .unwrap();
 }
 
+pub fn verify_auth_key(key: AuthKey, conn: &MysqlConnection) -> bool {
+    use super::schema::nonrepeating::dsl::*;
+    use diesel::dsl::exists;
+    use diesel::dsl::select;
+
+    let db_key = "current_auth";
+
+    let ok = select(exists(
+            nonrepeating
+                .filter(id.eq(db_key))
+                .filter(title.eq(key))
+        ))
+        .get_result(conn)
+        .unwrap();
+
+    ok
+}
+
 pub fn generate_auth_key(conn: &MysqlConnection) -> AuthKey {
     let res = random_hex(6);
     save_key_in_db(&res, conn);
