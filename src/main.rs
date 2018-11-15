@@ -17,6 +17,7 @@ extern crate sha2;
 mod manage_posts;
 mod connection;
 mod auth_key;
+mod webpost;
 mod schema;
 mod models;
 mod logout;

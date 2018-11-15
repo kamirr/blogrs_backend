@@ -1,7 +1,7 @@
 use super::schema::nonrepeating;
 use super::schema::posts;
 
-#[derive(Queryable, Clone, Debug, Serialize)]
+#[derive(Queryable, Clone, Debug)]
 pub struct Post {
     pub id: u64,
     pub title: String,
