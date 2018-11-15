@@ -7,13 +7,15 @@ use rocket::State;
 
 #[derive(Serialize)]
 pub struct LogoutData {
-    pub status: String
+    pub status: String,
+    pub key: AuthKey
 }
 
 impl LogoutData {
     fn from_status(status: &str) -> Self {
         LogoutData {
-            status: status.to_string()
+            status: status.to_string(),
+            key: "".to_string()
         }
     }
 }
@@ -22,9 +24,11 @@ fn delete_auth_key_from_db(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
     use super::schema::nonrepeating::dsl::*;
     let db_key = "current_auth";
 
-    let removal = diesel::delete(nonrepeating.filter(
-            id.eq(db_key)
-        ))
+    let removal = diesel::delete(
+            nonrepeating
+                .filter(id.eq(db_key))
+                .filter(title.eq(key))
+        )
         .execute(conn);
 
     match removal {
