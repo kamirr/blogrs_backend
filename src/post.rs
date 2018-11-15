@@ -1,6 +1,6 @@
 use crate::connection::SafeConnection;
+use crate::manage_posts_table::*;
 use crate::webpost::WebPost;
-use crate::manage_posts::*;
 
 use rocket_contrib::json::Json;
 use rocket::State;

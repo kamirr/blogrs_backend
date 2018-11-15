@@ -1,5 +1,5 @@
 use crate::connection::SafeConnection;
-use crate::manage_posts::*;
+use crate::manage_posts_table::*;
 
 use diesel::mysql::MysqlConnection;
 use rocket_contrib::json::Json;

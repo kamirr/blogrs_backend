@@ -1,6 +1,6 @@
 use crate::connection::SafeConnection;
+use crate::manage_posts_table::*;
 use crate::webpost::WebPost;
-use crate::manage_posts::*;
 use crate::auth_key::*;
 
 use diesel::mysql::MysqlConnection;

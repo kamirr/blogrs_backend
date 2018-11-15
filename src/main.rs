@@ -14,8 +14,8 @@ extern crate serde;
 extern crate rand;
 extern crate sha2;
 
+mod manage_posts_table;
 mod set_login_param;
-mod manage_posts;
 mod connection;
 mod auth_key;
 mod webpost;
