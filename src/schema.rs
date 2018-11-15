@@ -1,7 +1,7 @@
 table! {
     nonrepeating (id) {
         id -> Varchar,
-        title -> Text,
+        value -> Text,
     }
 }
 
