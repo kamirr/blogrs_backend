@@ -49,8 +49,8 @@ pub fn new(key: AuthKey, post: Json<WebPost>, conn: State<SafeConnection>) -> Js
     })
 }
 
-#[post("/edit/<id>/<key>", data = "<post>", format = "json")]
-pub fn update(id: u64, key: AuthKey, post: Json<WebPost>, conn: State<SafeConnection>) -> Json<Status> {
+#[post("/edit/<key>/<id>", data = "<post>", format = "json")]
+pub fn update(key: AuthKey, id: u64, post: Json<WebPost>, conn: State<SafeConnection>) -> Json<Status> {
     let conn: &SafeConnection = &conn;
     let lock = (*conn).lock().unwrap();
 
