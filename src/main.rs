@@ -9,11 +9,12 @@
 #[macro_use] extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde_json;
-extern crate r2d2;
+extern crate num_cpus;
 extern crate dotenv;
 extern crate serde;
 extern crate rand;
 extern crate sha2;
+extern crate r2d2;
 
 mod manage_posts_table;
 mod set_login_param;

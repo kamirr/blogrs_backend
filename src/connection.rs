@@ -16,7 +16,16 @@ pub fn make_pool() -> Pool {
         .expect("DATABASE_URL must be set");
 
     let manager = r2d2::ConnectionManager::<MysqlConnection>::new(database_url);
-    r2d2::Pool::builder()
+    let workers = num_cpus::get() as u32 * 2;
+
+    println!("Establishing database connections:");
+    let pool = r2d2::Pool::builder()
+        .min_idle(Some(workers))
+        .max_size(workers)
         .build(manager)
-        .unwrap()
+        .unwrap();
+
+    println!("    => connections: {}", workers);
+
+    pool
 }
