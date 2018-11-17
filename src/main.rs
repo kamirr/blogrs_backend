@@ -34,15 +34,15 @@ fn main() {
     use crate::connection::make_pool;
 
     let api_routes = routes![
-        login::login,
-        logout::logout,
-        meta::meta,
-        post::post,
-        manage_posts::new,
+        set_login_param::set_password,
+        set_login_param::set_login,
         manage_posts::update,
         manage_posts::delete,
-        set_login_param::set_login,
-        set_login_param::set_password
+        manage_posts::new,
+        logout::logout,
+        login::login,
+        meta::meta,
+        post::post
     ];
 
     let static_route = StaticFiles::from("frontend/");
