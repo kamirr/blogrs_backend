@@ -9,7 +9,7 @@ use std::env;
 pub type ConnectionManager = r2d2::ConnectionManager<MysqlConnection>;
 pub type Pool = r2d2::Pool<ConnectionManager>;
 
-pub fn make_pool() -> Pool {
+pub fn pool() -> Pool {
     dotenv().ok();
 
     let database_url = env::var("DATABASE_URL")

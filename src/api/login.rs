@@ -55,7 +55,7 @@ fn test_hash(l_hash: String, p_hash: String, data: String) -> bool {
 }
 
 fn fetch_from_nonrepeating(key: &str, conn: &MysqlConnection) -> Result<Vec<Nonrepeating>, ()> {
-    use super::schema::nonrepeating::dsl::*;
+    use crate::schema::nonrepeating::dsl::*;
 
     let res = nonrepeating
         .filter(id.eq(key))

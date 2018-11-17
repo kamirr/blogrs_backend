@@ -21,7 +21,7 @@ impl LogoutData {
 }
 
 fn delete_auth_key_from_db(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
-    use super::schema::nonrepeating::dsl::*;
+    use crate::schema::nonrepeating::dsl::*;
     let db_key = "current_auth";
 
     let removal = diesel::delete(

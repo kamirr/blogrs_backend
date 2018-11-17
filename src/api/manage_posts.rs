@@ -77,3 +77,11 @@ pub fn delete(key: AuthKey, id: u64, conn: State<Pool>) -> Json<Status> {
         Err(_) => Status::new_err("DB error")
     })
 }
+
+#[get("/post/<id>")]
+pub fn get(id: u64, conn: State<Pool>) -> Option<Json<WebPost>> {
+    let conn = conn.get().unwrap();
+
+    fetch_post(&conn, id)
+        .map(|p| Json(WebPost::from_post(p)))
+}

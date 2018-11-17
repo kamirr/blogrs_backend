@@ -17,39 +17,23 @@ extern crate sha2;
 extern crate r2d2;
 
 mod manage_posts_table;
-mod set_login_param;
-mod manage_posts;
 mod connection;
 mod auth_key;
 mod webpost;
 mod schema;
 mod models;
-mod logout;
-mod login;
-mod post;
-mod meta;
+
+mod api;
 
 fn main() {
-    use rocket_contrib::serve::StaticFiles;
-    use crate::connection::make_pool;
-
-    let api_routes = routes![
-        set_login_param::set_password,
-        set_login_param::set_login,
-        manage_posts::update,
-        manage_posts::delete,
-        manage_posts::new,
-        logout::logout,
-        login::login,
-        meta::meta,
-        post::post
-    ];
-
-    let static_route = StaticFiles::from("frontend/");
+    let static_files = rocket_contrib
+        ::serve
+        ::StaticFiles
+        ::from("frontend/");
 
     rocket::ignite()
-        .manage(make_pool())
-        .mount("/api", api_routes)
-        .mount("/", static_route)
+        .manage(connection::pool())
+        .mount("/api", api::routes())
+        .mount("/", static_files)
         .launch();
 }
