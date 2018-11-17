@@ -5,6 +5,7 @@ pub mod login;
 pub mod meta;
 
 mod login_guard;
+mod auth_guard;
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![

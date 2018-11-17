@@ -1,3 +1,4 @@
+use crate::api::auth_guard::AuthGuard;
 use crate::connection::Pool;
 use crate::auth_key::*;
 
@@ -46,9 +47,9 @@ fn remove_auth_key(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
     }
 }
 
-#[get("/logout/<key>")]
-pub fn logout(key: AuthKey, conn: State<Pool>) -> Json<LogoutData> {
+#[get("/logout")]
+pub fn logout(ag: AuthGuard, conn: State<Pool>) -> Json<LogoutData> {
     let conn = conn.get().unwrap();
 
-    Json(remove_auth_key(key, &conn))
+    Json(remove_auth_key(ag.key, &conn))
 }
