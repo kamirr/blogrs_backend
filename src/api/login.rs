@@ -88,7 +88,7 @@ fn test_login(hash: String, conn: &MysqlConnection) -> bool {
     test_hash(login_hash, pass_hash, hash)
 }
 
-#[post("/login")]
+#[get("/login")]
 pub fn login(lg: LoginGuard, conn: State<Pool>) -> Json<LoginStatus> {
     let conn = conn.get().unwrap();
     let hash = lg.hash;
