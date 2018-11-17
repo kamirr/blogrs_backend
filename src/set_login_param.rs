@@ -1,4 +1,4 @@
-use crate::connection::SafeConnection;
+use crate::connection::Pool;
 use crate::auth_key::*;
 
 use rocket_contrib::json::Json;
@@ -42,23 +42,22 @@ fn save_value_to_db(login_hash: String, db_key: &str, conn: &MysqlConnection) ->
     }
 }
 
-fn set_param(key: AuthKey, new_hash: String, db_key: &str, conn: State<SafeConnection>) -> Json<Status> {
-    let conn: &SafeConnection = &conn;
-    let lock = (*conn).lock().unwrap();
+fn set_param(key: AuthKey, new_hash: String, db_key: &str, conn: State<Pool>) -> Json<Status> {
+    let conn = conn.get().unwrap();
 
-    Json(if !verify_auth_key(key, &*lock) {
+    Json(if !verify_auth_key(key, &conn) {
         Status::new_err("not logged in")
     } else {
-        save_value_to_db(new_hash, db_key, &*lock)
+        save_value_to_db(new_hash, db_key, &conn)
     })
 }
 
 #[post("/set/login/<key>", data = "<new_hash>")]
-pub fn set_login(key: AuthKey, new_hash: String, conn: State<SafeConnection>)  -> Json<Status> {
+pub fn set_login(key: AuthKey, new_hash: String, conn: State<Pool>)  -> Json<Status> {
     set_param(key, new_hash, "login_hash", conn)
 }
 
 #[post("/set/password/<key>", data = "<new_hash>")]
-pub fn set_password(key: AuthKey, new_hash: String, conn: State<SafeConnection>)  -> Json<Status> {
+pub fn set_password(key: AuthKey, new_hash: String, conn: State<Pool>) -> Json<Status> {
     set_param(key, new_hash, "pass_hash", conn)
 }

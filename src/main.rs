@@ -9,6 +9,7 @@
 #[macro_use] extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde_json;
+extern crate r2d2;
 extern crate dotenv;
 extern crate serde;
 extern crate rand;
@@ -28,8 +29,8 @@ mod post;
 mod meta;
 
 fn main() {
-    use crate::connection::establish_sql_connection;
     use rocket_contrib::serve::StaticFiles;
+    use crate::connection::make_pool;
 
     let api_routes = routes![
         login::login,
@@ -46,7 +47,7 @@ fn main() {
     let static_route = StaticFiles::from("frontend/");
 
     rocket::ignite()
-        .manage(establish_sql_connection())
+        .manage(make_pool())
         .mount("/api", api_routes)
         .mount("/", static_route)
         .launch();

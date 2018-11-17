@@ -1,4 +1,4 @@
-use crate::connection::SafeConnection;
+use crate::connection::Pool;
 use crate::auth_key::*;
 
 use rocket_contrib::json::Json;
@@ -47,9 +47,8 @@ fn remove_auth_key(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
 }
 
 #[get("/logout/<key>")]
-pub fn logout(key: AuthKey, conn: State<SafeConnection>) -> Json<LogoutData> {
-    let conn: &SafeConnection = &conn;
-    let lock = (*conn).lock().unwrap();
+pub fn logout(key: AuthKey, conn: State<Pool>) -> Json<LogoutData> {
+    let conn = conn.get().unwrap();
 
-    Json(remove_auth_key(key, &*lock))
+    Json(remove_auth_key(key, &conn))
 }

@@ -1,5 +1,5 @@
-use crate::connection::SafeConnection;
 use crate::manage_posts_table::*;
+use crate::connection::Pool;
 
 use diesel::mysql::MysqlConnection;
 use rocket_contrib::json::Json;
@@ -19,7 +19,7 @@ impl Meta {
 }
 
 #[get("/meta")]
-pub fn meta(conn: State<SafeConnection>) -> Json<Meta> {
-    let lock = (*conn).lock().unwrap();
-    Json(Meta::from(&*lock))
+pub fn meta(conn: State<Pool>) -> Json<Meta> {
+    let conn = conn.get().unwrap();
+    Json(Meta::from(&conn))
 }

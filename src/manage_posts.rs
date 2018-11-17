@@ -1,5 +1,5 @@
-use crate::connection::SafeConnection;
 use crate::manage_posts_table::*;
+use crate::connection::Pool;
 use crate::webpost::WebPost;
 use crate::auth_key::*;
 
@@ -33,50 +33,47 @@ impl Status {
 }
 
 #[post("/new/<key>", data = "<post>", format = "json")]
-pub fn new(key: AuthKey, post: Json<WebPost>, conn: State<SafeConnection>) -> Json<Status> {
-    let conn: &SafeConnection = &conn;
-    let lock = (*conn).lock().unwrap();
+pub fn new(key: AuthKey, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
+    let conn = conn.get().unwrap();
 
-    if !verify_auth_key(key, &*lock) {
+    if !verify_auth_key(key, &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
     let post = post.into_inner();
 
-    Json(match create_post(&*lock, &post.title, &post.body) {
-        Some(id) => Status::new_ok("success", id, &*lock),
+    Json(match create_post(&conn, &post.title, &post.body) {
+        Some(id) => Status::new_ok("success", id, &conn),
         _ => Status::new_err("DB error")
     })
 }
 
 #[post("/edit/<key>/<id>", data = "<post>", format = "json")]
-pub fn update(key: AuthKey, id: u64, post: Json<WebPost>, conn: State<SafeConnection>) -> Json<Status> {
-    let conn: &SafeConnection = &conn;
-    let lock = (*conn).lock().unwrap();
+pub fn update(key: AuthKey, id: u64, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
+    let conn = conn.get().unwrap();
 
-    if !verify_auth_key(key, &*lock) {
+    if !verify_auth_key(key, &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
     let post = post.into_inner();
 
-    Json(match update_post(&*lock, id, &post.title, &post.body) {
-        Some(id) => Status::new_ok("success", id, &*lock),
+    Json(match update_post(&conn, id, &post.title, &post.body) {
+        Some(id) => Status::new_ok("success", id, &conn),
         _ => Status::new_err("DB error")
     })
 }
 
 #[get("/delete/<key>/<id>")]
-pub fn delete(key: AuthKey, id: u64, conn: State<SafeConnection>) -> Json<Status> {
-    let conn: &SafeConnection = &conn;
-    let lock = (*conn).lock().unwrap();
+pub fn delete(key: AuthKey, id: u64, conn: State<Pool>) -> Json<Status> {
+    let conn = conn.get().unwrap();
 
-    if !verify_auth_key(key, &*lock) {
+    if !verify_auth_key(key, &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
-    Json(match delete_post(&*lock, id) {
-        Ok(_) => Status::new_ok("success", 0, &*lock),
+    Json(match delete_post(&conn, id) {
+        Ok(_) => Status::new_ok("success", 0, &conn),
         Err(_) => Status::new_err("DB error")
     })
 }

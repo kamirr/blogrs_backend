@@ -1,5 +1,5 @@
-use crate::connection::SafeConnection;
 use crate::models::Nonrepeating;
+use crate::connection::Pool;
 use crate::auth_key::*;
 
 use rocket_contrib::json::Json;
@@ -88,12 +88,11 @@ fn test_login(hash: String, conn: &MysqlConnection) -> bool {
 }
 
 #[get("/login/<hash>")]
-pub fn login(hash: String, conn: State<SafeConnection>) -> Json<LoginStatus> {
-    let conn: &SafeConnection = &conn;
-    let lock = (*conn).lock().unwrap();
+pub fn login(hash: String, conn: State<Pool>) -> Json<LoginStatus> {
+    let conn = conn.get().unwrap();
 
-    Json(if test_login(hash, &*lock) {
-        LoginStatus::new_ok("success", &*lock)
+    Json(if test_login(hash, &conn) {
+        LoginStatus::new_ok("success", &conn)
     } else {
         LoginStatus::new_err("error")
     })
