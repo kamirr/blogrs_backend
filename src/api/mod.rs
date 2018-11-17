@@ -4,6 +4,8 @@ pub mod logout;
 pub mod login;
 pub mod meta;
 
+mod login_guard;
+
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         set_login_param::set_password,

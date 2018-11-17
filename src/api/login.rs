@@ -1,3 +1,4 @@
+use crate::api::login_guard::LoginGuard;
 use crate::models::Nonrepeating;
 use crate::connection::Pool;
 use crate::auth_key::*;
@@ -87,9 +88,10 @@ fn test_login(hash: String, conn: &MysqlConnection) -> bool {
     test_hash(login_hash, pass_hash, hash)
 }
 
-#[get("/login/<hash>")]
-pub fn login(hash: String, conn: State<Pool>) -> Json<LoginStatus> {
+#[post("/login")]
+pub fn login(lg: LoginGuard, conn: State<Pool>) -> Json<LoginStatus> {
     let conn = conn.get().unwrap();
+    let hash = lg.hash;
 
     Json(if test_login(hash, &conn) {
         LoginStatus::new_ok("success", &conn)
