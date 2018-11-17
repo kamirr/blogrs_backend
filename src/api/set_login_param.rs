@@ -1,3 +1,4 @@
+use crate::api::auth_guard::AuthGuard;
 use crate::connection::Pool;
 use crate::auth_key::*;
 
@@ -52,12 +53,12 @@ fn set_param(key: AuthKey, new_hash: String, db_key: &str, conn: State<Pool>) ->
     })
 }
 
-#[post("/set/login/<key>", data = "<new_hash>")]
-pub fn set_login(key: AuthKey, new_hash: String, conn: State<Pool>)  -> Json<Status> {
-    set_param(key, new_hash, "login_hash", conn)
+#[post("/set/login", data = "<new_hash>")]
+pub fn set_login(ag: AuthGuard, new_hash: String, conn: State<Pool>)  -> Json<Status> {
+    set_param(ag.key, new_hash, "login_hash", conn)
 }
 
-#[post("/set/password/<key>", data = "<new_hash>")]
-pub fn set_password(key: AuthKey, new_hash: String, conn: State<Pool>) -> Json<Status> {
-    set_param(key, new_hash, "pass_hash", conn)
+#[post("/set/password", data = "<new_hash>")]
+pub fn set_password(ag: AuthGuard, new_hash: String, conn: State<Pool>) -> Json<Status> {
+    set_param(ag.key, new_hash, "pass_hash", conn)
 }

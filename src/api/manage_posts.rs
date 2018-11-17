@@ -1,3 +1,4 @@
+use crate::api::auth_guard::AuthGuard;
 use crate::manage_posts_table::*;
 use crate::connection::Pool;
 use crate::webpost::WebPost;
@@ -32,11 +33,11 @@ impl Status {
     }
 }
 
-#[post("/new/<key>", data = "<post>", format = "json")]
-pub fn new(key: AuthKey, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
+#[post("/new", data = "<post>", format = "json")]
+pub fn new(ag: AuthGuard, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
     let conn = conn.get().unwrap();
 
-    if !verify_auth_key(key, &conn) {
+    if !verify_auth_key(ag.key, &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
@@ -48,11 +49,11 @@ pub fn new(key: AuthKey, post: Json<WebPost>, conn: State<Pool>) -> Json<Status>
     })
 }
 
-#[post("/edit/<key>/<id>", data = "<post>", format = "json")]
-pub fn update(key: AuthKey, id: u64, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
+#[post("/edit/<id>", data = "<post>", format = "json")]
+pub fn update(ag: AuthGuard, id: u64, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
     let conn = conn.get().unwrap();
 
-    if !verify_auth_key(key, &conn) {
+    if !verify_auth_key(ag.key, &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
@@ -64,11 +65,11 @@ pub fn update(key: AuthKey, id: u64, post: Json<WebPost>, conn: State<Pool>) -> 
     })
 }
 
-#[get("/delete/<key>/<id>")]
-pub fn delete(key: AuthKey, id: u64, conn: State<Pool>) -> Json<Status> {
+#[get("/delete/<id>")]
+pub fn delete(ag: AuthGuard, id: u64, conn: State<Pool>) -> Json<Status> {
     let conn = conn.get().unwrap();
 
-    if !verify_auth_key(key, &conn) {
+    if !verify_auth_key(ag.key, &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
