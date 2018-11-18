@@ -4,8 +4,6 @@ pub mod login;
 pub mod meta;
 pub mod set;
 
-mod webpost;
-
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         manage_posts::update,

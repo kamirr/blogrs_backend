@@ -3,37 +3,10 @@ use crate::db::models::Nonrepeating;
 use crate::db::connection::Pool;
 use crate::auth::*;
 
-use rocket_contrib::json::Json;
+use rocket_contrib::json::{JsonValue};
 use sha2::{Sha224, Digest};
 use diesel::prelude::*;
 use rocket::State;
-
-#[derive(Deserialize)]
-pub struct LoginData {
-    pub hash: String
-}
-
-#[derive(Serialize)]
-pub struct LoginStatus {
-    pub status: String,
-    pub key: AuthKey
-}
-
-impl LoginStatus {
-    pub fn new_ok(status: &str, conn: &MysqlConnection) -> Self {
-        LoginStatus {
-            status: status.to_string(),
-            key: generate_auth_key(conn)
-        }
-    }
-
-    pub fn new_err(status: &str) -> Self {
-        LoginStatus {
-            status: status.to_string(),
-            key: "".to_string()
-        }
-    }
-}
 
 fn test_hash(l_hash: String, p_hash: String, data: String) -> bool {
     let mut hasher = Sha224::new();
@@ -89,13 +62,13 @@ fn test_login(hash: String, conn: &MysqlConnection) -> bool {
 }
 
 #[get("/login")]
-pub fn login(lg: LoginGuard, conn: State<Pool>) -> Json<LoginStatus> {
+pub fn login(lg: LoginGuard, conn: State<Pool>) -> JsonValue {
     let conn = conn.get().unwrap();
     let hash = lg.hash;
 
-    Json(if test_login(hash, &conn) {
-        LoginStatus::new_ok("success", &conn)
+    if test_login(hash, &conn) {
+        json!({"status": "success", "key": generate_auth_key(&conn)})
     } else {
-        LoginStatus::new_err("error")
-    })
+        json!({"status": "error"})
+    }
 }
