@@ -17,8 +17,6 @@ extern crate sha2;
 extern crate r2d2;
 
 mod auth_key;
-mod webpost;
-
 mod guards;
 mod api;
 mod db;
