@@ -1,5 +1,5 @@
-use super::schema::nonrepeating;
-use super::schema::posts;
+use crate::db::schema::nonrepeating;
+use crate::db::schema::posts;
 
 #[derive(Queryable, Clone, Debug)]
 pub struct Post {
