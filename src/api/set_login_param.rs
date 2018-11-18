@@ -38,7 +38,7 @@ fn save_value_to_db(login_hash: String, db_key: &str, conn: &MysqlConnection) ->
         .execute(conn);
 
     match res {
-        Ok(_) => Status::new_ok("ok", conn),
+        Ok(_) => Status::new_ok("success", conn),
         Err(_) => Status::new_err("DB error")
     }
 }
@@ -53,9 +53,9 @@ fn set_param(key: AuthKey, new_hash: String, db_key: &str, conn: State<Pool>) ->
     })
 }
 
-#[post("/set/login", data = "<new_hash>")]
-pub fn set_login(ag: AuthGuard, new_hash: String, conn: State<Pool>)  -> Json<Status> {
-    set_param(ag.key, new_hash, "login_hash", conn)
+#[post("/set/login", data = "<new_login>")]
+pub fn set_login(ag: AuthGuard, new_login: String, conn: State<Pool>)  -> Json<Status> {
+    set_param(ag.key, new_login, "login", conn)
 }
 
 #[post("/set/password", data = "<new_hash>")]
