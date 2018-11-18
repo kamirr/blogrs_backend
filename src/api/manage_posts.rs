@@ -68,8 +68,8 @@ pub fn delete(key: AuthGuard, id: u64, conn: State<Pool>) -> JsonValue {
     }
 }
 
-#[get("/post/<id>")]
-pub fn get(id: u64, conn: State<Pool>) -> Option<JsonValue> {
+#[get("/post/<id>/json")]
+pub fn get_json(id: u64, conn: State<Pool>) -> Option<JsonValue> {
     let conn = conn.get().unwrap();
 
     fetch_post(&conn, id)
