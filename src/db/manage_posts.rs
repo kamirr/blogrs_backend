@@ -1,4 +1,4 @@
-use crate::db::models::{Post, NewPost};
+use crate::db::models::{Post, WebPost};
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 
@@ -9,9 +9,9 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u6
 
     no_arg_sql_function!(last_insert_id, Unsigned<BigInt>, "Returns ID of the last inserted post");
 
-    let new_post = NewPost {
-        title,
-        body,
+    let new_post = WebPost {
+        title: title.to_string(),
+        body: body.to_string(),
     };
 
     let res = diesel::insert_into(posts)

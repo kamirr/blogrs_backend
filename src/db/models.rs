@@ -8,11 +8,11 @@ pub struct Post {
     pub body: String
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Deserialize)]
 #[table_name="posts"]
-pub struct NewPost<'a> {
-    pub title: &'a str,
-    pub body: &'a str,
+pub struct WebPost {
+    pub title: String,
+    pub body: String,
 }
 
 #[derive(Queryable, Insertable, Clone, Debug)]

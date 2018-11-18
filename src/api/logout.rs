@@ -2,26 +2,11 @@ use crate::guards::auth::AuthGuard;
 use crate::db::connection::Pool;
 use crate::auth::*;
 
-use rocket_contrib::json::Json;
+use rocket_contrib::json::JsonValue;
 use diesel::prelude::*;
 use rocket::State;
 
-#[derive(Serialize)]
-pub struct LogoutData {
-    pub status: String,
-    pub key: AuthKey
-}
-
-impl LogoutData {
-    fn from_status(status: &str) -> Self {
-        LogoutData {
-            status: status.to_string(),
-            key: "".to_string()
-        }
-    }
-}
-
-fn delete_auth_key_from_db(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
+fn delete_auth_key_from_db(key: AuthKey, conn: &MysqlConnection) -> JsonValue {
     use crate::db::schema::nonrepeating::dsl::*;
     let db_key = "current_auth";
 
@@ -32,23 +17,23 @@ fn delete_auth_key_from_db(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
         )
         .execute(conn);
 
-    match removal {
-        Ok(_) => LogoutData::from_status("success"),
-        Err(_) => LogoutData::from_status("DB error")
-    }
+    json!({"status": match removal {
+        Ok(_) => "success",
+        _ => "DB Error"
+    }})
 }
 
-fn remove_auth_key(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
+fn remove_auth_key(key: AuthKey, conn: &MysqlConnection) -> JsonValue {
     let ok = verify_auth_key(key.to_string(), conn);
     if ok {
         delete_auth_key_from_db(key, conn)
     } else {
-        LogoutData::from_status("not logged in")
+        json!({"status": "not logged in"})
     }
 }
 
 #[get("/logout")]
-pub fn logout(key: AuthGuard, conn: State<Pool>) -> Json<LogoutData> {
+pub fn logout(key: AuthGuard, conn: State<Pool>) -> JsonValue {
     let conn = conn.get().unwrap();
-    Json(remove_auth_key(key.get(), &conn))
+    remove_auth_key(key.get(), &conn)
 }
