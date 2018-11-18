@@ -23,6 +23,7 @@ mod webpost;
 mod schema;
 mod models;
 
+mod guards;
 mod api;
 
 fn main() {

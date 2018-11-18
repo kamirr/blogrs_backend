@@ -1,4 +1,4 @@
-use crate::api::auth_guard::AuthGuard;
+use crate::guards::auth::AuthGuard;
 use crate::connection::Pool;
 use crate::auth_key::*;
 

@@ -1,4 +1,4 @@
-use crate::api::login_guard::LoginGuard;
+use crate::guards::login::LoginGuard;
 use crate::models::Nonrepeating;
 use crate::connection::Pool;
 use crate::auth_key::*;

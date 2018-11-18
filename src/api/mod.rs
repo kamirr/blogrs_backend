@@ -4,10 +4,6 @@ pub mod login;
 pub mod meta;
 pub mod set;
 
-mod value_guard;
-mod login_guard;
-mod auth_guard;
-
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         manage_posts::update,

@@ -1,5 +1,5 @@
-use crate::api::value_guard::ValueGuard;
-use crate::api::auth_guard::AuthGuard;
+use crate::guards::value::ValueGuard;
+use crate::guards::auth::AuthGuard;
 use crate::connection::Pool;
 use crate::auth_key::*;
 
