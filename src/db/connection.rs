@@ -3,17 +3,17 @@ pub use std::sync::{Arc, Mutex};
 pub use diesel::prelude::*;
 pub use diesel::r2d2;
 
-use dotenv::dotenv;
-use std::env;
+use crate::db::url::url;
 
 pub type ConnectionManager = r2d2::ConnectionManager<MysqlConnection>;
 pub type Pool = r2d2::Pool<ConnectionManager>;
 
 pub fn pool() -> Pool {
-    dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
+    let database_url = url(
+        "mysql.agh.edu.pl", 3306,
+        "koczurek", "cNuLjk0DMyydcnNW",
+        "koczurek"
+    );
 
     let manager = r2d2::ConnectionManager::<MysqlConnection>::new(database_url);
     let workers = num_cpus::get() as u32 * 2;

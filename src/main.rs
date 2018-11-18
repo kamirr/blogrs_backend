@@ -10,7 +10,6 @@
 #[macro_use] extern crate rocket;
 extern crate pulldown_cmark;
 extern crate num_cpus;
-extern crate dotenv;
 extern crate rand;
 extern crate sha2;
 extern crate r2d2;
