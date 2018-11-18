@@ -48,8 +48,7 @@ fn remove_auth_key(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
 }
 
 #[get("/logout")]
-pub fn logout(ag: AuthGuard, conn: State<Pool>) -> Json<LogoutData> {
+pub fn logout(key: AuthGuard, conn: State<Pool>) -> Json<LogoutData> {
     let conn = conn.get().unwrap();
-
-    Json(remove_auth_key(ag.key, &conn))
+    Json(remove_auth_key(key.get(), &conn))
 }

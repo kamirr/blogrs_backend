@@ -2,30 +2,28 @@ use rocket::request::{self, Request, FromRequest};
 use rocket::outcome::Outcome::*;
 use rocket::http::Status;
 
-use crate::auth_key::*;
-
-pub struct AuthGuard {
-    val: AuthKey
+pub struct ValueGuard {
+    val: String
 }
 
-impl AuthGuard {
-    pub fn get(&self) -> AuthKey {
+impl ValueGuard {
+    pub fn get(&self) -> String {
         self.val.clone()
     }
 }
 
-impl<'a, 'r> FromRequest<'a, 'r> for AuthGuard {
+impl<'a, 'r> FromRequest<'a, 'r> for ValueGuard {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<AuthGuard, ()> {
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<ValueGuard, ()> {
         let res = request
             .headers()
-            .get("X-Api-Key")
+            .get("X-Value")
             .map(|s| s.to_string())
             .collect::<Vec<String>>();
 
         match res.len() {
-            1 => Success(AuthGuard{ val: res[0].clone() }),
+            1 => Success(ValueGuard{ val: res[0].clone() }),
             _ => Failure((Status::Forbidden, ()))
         }
     }

@@ -1,3 +1,4 @@
+use crate::api::value_guard::ValueGuard;
 use crate::api::auth_guard::AuthGuard;
 use crate::connection::Pool;
 use crate::auth_key::*;
@@ -28,12 +29,12 @@ impl Status {
     }
 }
 
-fn save_value_to_db(login_hash: String, db_key: &str, conn: &MysqlConnection) -> Status {
+fn save_value_to_db(db_key: &str, db_value: &str, conn: &MysqlConnection) -> Status {
     use crate::schema::nonrepeating::dsl::*;
 
     let res = diesel::update(nonrepeating.find(db_key))
         .set(
-            value.eq(login_hash)
+            value.eq(db_value)
         )
         .execute(conn);
 
@@ -43,22 +44,22 @@ fn save_value_to_db(login_hash: String, db_key: &str, conn: &MysqlConnection) ->
     }
 }
 
-fn set_param(key: AuthKey, new_hash: String, db_key: &str, conn: State<Pool>) -> Json<Status> {
+fn set_param(key: AuthKey, db_key: &str, db_value: &str, conn: State<Pool>) -> Json<Status> {
     let conn = conn.get().unwrap();
 
     Json(if !verify_auth_key(key, &conn) {
         Status::new_err("not logged in")
     } else {
-        save_value_to_db(new_hash, db_key, &conn)
+        save_value_to_db(db_key, db_value, &conn)
     })
 }
 
-#[post("/set/login", data = "<new_login>")]
-pub fn set_login(ag: AuthGuard, new_login: String, conn: State<Pool>)  -> Json<Status> {
-    set_param(ag.key, new_login, "login", conn)
+#[get("/setlogin")]
+pub fn login(key: AuthGuard, value: ValueGuard, conn: State<Pool>)  -> Json<Status> {
+    set_param(key.get(), "login", &value.get(), conn)
 }
 
-#[post("/set/password", data = "<new_hash>")]
-pub fn set_password(ag: AuthGuard, new_hash: String, conn: State<Pool>) -> Json<Status> {
-    set_param(ag.key, new_hash, "pass_hash", conn)
+#[get("/setpass")]
+pub fn password_hash(key: AuthGuard, value: ValueGuard, conn: State<Pool>) -> Json<Status> {
+    set_param(key.get(), "pass_hash", &value.get(), conn)
 }

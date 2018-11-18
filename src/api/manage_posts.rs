@@ -34,10 +34,10 @@ impl Status {
 }
 
 #[post("/new", data = "<post>", format = "json")]
-pub fn new(ag: AuthGuard, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
+pub fn new(key: AuthGuard, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
     let conn = conn.get().unwrap();
 
-    if !verify_auth_key(ag.key, &conn) {
+    if !verify_auth_key(key.get(), &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
@@ -50,10 +50,10 @@ pub fn new(ag: AuthGuard, post: Json<WebPost>, conn: State<Pool>) -> Json<Status
 }
 
 #[post("/edit/<id>", data = "<post>", format = "json")]
-pub fn update(ag: AuthGuard, id: u64, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
+pub fn update(key: AuthGuard, id: u64, post: Json<WebPost>, conn: State<Pool>) -> Json<Status> {
     let conn = conn.get().unwrap();
 
-    if !verify_auth_key(ag.key, &conn) {
+    if !verify_auth_key(key.get(), &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
@@ -66,10 +66,10 @@ pub fn update(ag: AuthGuard, id: u64, post: Json<WebPost>, conn: State<Pool>) ->
 }
 
 #[get("/delete/<id>")]
-pub fn delete(ag: AuthGuard, id: u64, conn: State<Pool>) -> Json<Status> {
+pub fn delete(key: AuthGuard, id: u64, conn: State<Pool>) -> Json<Status> {
     let conn = conn.get().unwrap();
 
-    if !verify_auth_key(ag.key, &conn) {
+    if !verify_auth_key(key.get(), &conn) {
         return Json(Status::new_err("not logged in"))
     }
 
