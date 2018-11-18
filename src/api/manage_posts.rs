@@ -1,6 +1,6 @@
 use crate::guards::auth::AuthGuard;
-use crate::manage_posts_table::*;
-use crate::connection::Pool;
+use crate::db::connection::Pool;
+use crate::db::manage_posts::*;
 use crate::webpost::WebPost;
 use crate::auth_key::*;
 

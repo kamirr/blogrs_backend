@@ -1,5 +1,5 @@
 use crate::guards::auth::AuthGuard;
-use crate::connection::Pool;
+use crate::db::connection::Pool;
 use crate::auth_key::*;
 
 use rocket_contrib::json::Json;
@@ -22,7 +22,7 @@ impl LogoutData {
 }
 
 fn delete_auth_key_from_db(key: AuthKey, conn: &MysqlConnection) -> LogoutData {
-    use crate::schema::nonrepeating::dsl::*;
+    use crate::db::schema::nonrepeating::dsl::*;
     let db_key = "current_auth";
 
     let removal = diesel::delete(

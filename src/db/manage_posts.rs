@@ -1,10 +1,10 @@
-use crate::models::{Post, NewPost};
+use crate::db::models::{Post, NewPost};
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 
 pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u64> {
     use diesel::sql_types::{Unsigned, BigInt};
-    use super::schema::posts::dsl::posts;
+    use crate::db::schema::posts::dsl::posts;
     use diesel::select;
 
     no_arg_sql_function!(last_insert_id, Unsigned<BigInt>, "Returns ID of the last inserted post");
@@ -29,7 +29,7 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u6
 }
 
 pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> Option<u64> {
-    use crate::schema::posts::dsl::*;
+    use crate::db::schema::posts::dsl::*;
 
     let res = diesel::update(posts.find(identifier))
         .set((
@@ -45,7 +45,7 @@ pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new
 }
 
 pub fn delete_post(conn: &MysqlConnection, identifier: u64) -> QueryResult<usize> {
-    use crate::schema::posts::dsl::*;
+    use crate::db::schema::posts::dsl::*;
 
     diesel::delete(
             posts.filter(
@@ -56,7 +56,7 @@ pub fn delete_post(conn: &MysqlConnection, identifier: u64) -> QueryResult<usize
 }
 
 pub fn fetch_post(conn: &MysqlConnection, identifier: u64) -> Option<Post> {
-    use super::schema::posts::dsl::*;
+    use crate::db::schema::posts::dsl::*;
 
     let results = posts
         .filter(id.eq(identifier))
@@ -73,7 +73,7 @@ pub fn fetch_post(conn: &MysqlConnection, identifier: u64) -> Option<Post> {
 }
 
 pub fn all_ids(conn: &MysqlConnection) -> Vec<u64> {
-    use super::schema::posts::dsl::*;
+    use crate::db::schema::posts::dsl::*;
 
     let res = posts
         .select(id)

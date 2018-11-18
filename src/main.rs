@@ -16,15 +16,12 @@ extern crate rand;
 extern crate sha2;
 extern crate r2d2;
 
-mod manage_posts_table;
-mod connection;
 mod auth_key;
 mod webpost;
-mod schema;
-mod models;
 
 mod guards;
 mod api;
+mod db;
 
 fn main() {
     let static_files = rocket_contrib
@@ -33,7 +30,7 @@ fn main() {
         ::from("frontend/");
 
     rocket::ignite()
-        .manage(connection::pool())
+        .manage(db::connection::pool())
         .mount("/api", api::routes())
         .mount("/", static_files)
         .launch();

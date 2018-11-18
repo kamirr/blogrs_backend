@@ -1,6 +1,6 @@
 use crate::guards::value::ValueGuard;
 use crate::guards::auth::AuthGuard;
-use crate::connection::Pool;
+use crate::db::connection::Pool;
 use crate::auth_key::*;
 
 use rocket_contrib::json::Json;
@@ -30,7 +30,7 @@ impl Status {
 }
 
 fn save_value_to_db(db_key: &str, db_value: &str, conn: &MysqlConnection) -> Status {
-    use crate::schema::nonrepeating::dsl::*;
+    use crate::db::schema::nonrepeating::dsl::*;
 
     let res = diesel::update(nonrepeating.find(db_key))
         .set(

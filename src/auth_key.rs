@@ -1,4 +1,4 @@
-use crate::models::Nonrepeating;
+use crate::db::models::Nonrepeating;
 
 use diesel::mysql::MysqlConnection;
 use diesel::insert_into;
@@ -24,7 +24,7 @@ fn random_hex(count: u32) -> String {
 }
 
 fn save_key_in_db(key: &str, conn: &MysqlConnection) {
-    use super::schema::nonrepeating::dsl::*;
+    use crate::db::schema::nonrepeating::dsl::*;
     use diesel::dsl::exists;
     use diesel::dsl::select;
 
@@ -56,7 +56,7 @@ fn save_key_in_db(key: &str, conn: &MysqlConnection) {
 }
 
 pub fn verify_auth_key(key: AuthKey, conn: &MysqlConnection) -> bool {
-    use super::schema::nonrepeating::dsl::*;
+    use crate::db::schema::nonrepeating::dsl::*;
     use diesel::dsl::exists;
     use diesel::dsl::select;
 

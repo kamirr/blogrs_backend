@@ -1,4 +1,4 @@
-use crate::models::Post;
+use crate::db::models::Post;
 
 #[derive(Serialize, Deserialize)]
 pub struct WebPost {

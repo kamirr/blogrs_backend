@@ -1,6 +1,6 @@
 use crate::guards::login::LoginGuard;
-use crate::models::Nonrepeating;
-use crate::connection::Pool;
+use crate::db::models::Nonrepeating;
+use crate::db::connection::Pool;
 use crate::auth_key::*;
 
 use rocket_contrib::json::Json;
@@ -56,7 +56,7 @@ fn test_hash(l_hash: String, p_hash: String, data: String) -> bool {
 }
 
 fn fetch_from_nonrepeating(key: &str, conn: &MysqlConnection) -> Result<Vec<Nonrepeating>, ()> {
-    use crate::schema::nonrepeating::dsl::*;
+    use crate::db::schema::nonrepeating::dsl::*;
 
     let res = nonrepeating
         .filter(id.eq(key))
