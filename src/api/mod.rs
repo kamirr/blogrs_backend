@@ -7,6 +7,7 @@ pub mod set;
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         manage_posts::get_json,
+        manage_posts::get_html,
         manage_posts::update,
         manage_posts::delete,
         manage_posts::new,

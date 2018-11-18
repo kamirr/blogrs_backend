@@ -75,3 +75,24 @@ pub fn get_json(id: u64, conn: State<Pool>) -> Option<JsonValue> {
     fetch_post(&conn, id)
         .map(|p| json!({"title": p.title, "body": p.body}))
 }
+
+#[get("/post/<id>/html")]
+pub fn get_html(id: u64, conn: State<Pool>) -> Option<String> {
+    use pulldown_cmark::*;
+
+    let conn = conn.get().unwrap();
+    let post = fetch_post(&conn, id);
+
+    match post {
+        Some(post) => {
+            let mut html_buf = String::new();
+
+            let md = format!("# {}\n{}", post.title, post.body);
+            let parser = Parser::new(&md);
+            html::push_html(&mut html_buf, parser);
+
+            Some(html_buf)
+        },
+        _ => None
+    }
+}
