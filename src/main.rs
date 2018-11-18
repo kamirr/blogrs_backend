@@ -16,8 +16,8 @@ extern crate rand;
 extern crate sha2;
 extern crate r2d2;
 
-mod auth_key;
 mod guards;
+mod auth;
 mod api;
 mod db;
 

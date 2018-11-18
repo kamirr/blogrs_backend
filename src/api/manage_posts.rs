@@ -2,7 +2,7 @@ use crate::guards::auth::AuthGuard;
 use crate::api::webpost::WebPost;
 use crate::db::connection::Pool;
 use crate::db::manage_posts::*;
-use crate::auth_key::*;
+use crate::auth::*;
 
 use diesel::mysql::MysqlConnection;
 use rocket_contrib::json::Json;

@@ -2,7 +2,7 @@ use rocket::request::{self, Request, FromRequest};
 use rocket::outcome::Outcome::*;
 use rocket::http::Status;
 
-use crate::auth_key::*;
+use crate::auth::*;
 
 pub struct AuthGuard {
     val: AuthKey

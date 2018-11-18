@@ -1,6 +1,6 @@
 use crate::guards::auth::AuthGuard;
 use crate::db::connection::Pool;
-use crate::auth_key::*;
+use crate::auth::*;
 
 use rocket_contrib::json::Json;
 use diesel::prelude::*;

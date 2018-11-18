@@ -1,7 +1,7 @@
 use crate::guards::login::LoginGuard;
 use crate::db::models::Nonrepeating;
 use crate::db::connection::Pool;
-use crate::auth_key::*;
+use crate::auth::*;
 
 use rocket_contrib::json::Json;
 use sha2::{Sha224, Digest};
