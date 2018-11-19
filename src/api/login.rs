@@ -28,7 +28,7 @@ fn test_hash(l_hash: String, p_hash: String, data: String) -> bool {
 }
 
 fn test_login(hash: String, pool: &State<Pool>) -> bool {
-    let nr = nonrepeating::Nonrepeating::new(pool);
+    let nr = nonrepeating::Nonrepeating::new(&pool);
 
     let login_hash = match nr.get("login") {
         Some(hash) => hash,
@@ -45,11 +45,8 @@ fn test_login(hash: String, pool: &State<Pool>) -> bool {
 
 #[get("/login")]
 pub fn login(lg: LoginGuard, pool: State<Pool>) -> JsonValue {
-    let conn = pool.get().unwrap();
-    let hash = lg.hash;
-
-    if test_login(hash, &pool) {
-        json!({"status": "success", "key": generate_auth_key(&conn)})
+    if test_login(lg.hash, &pool) {
+        json!({"status": "success", "key": generate_auth_key(&pool)})
     } else {
         json!({"status": "error"})
     }

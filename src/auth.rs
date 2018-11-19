@@ -1,8 +1,10 @@
 use crate::db::models::Nonrepeating;
+use crate::db::connection::*;
 
 use diesel::mysql::MysqlConnection;
 use diesel::insert_into;
 use diesel::prelude::*;
+use rocket::State;
 use rand::random;
 
 pub type AuthKey = String;
@@ -55,27 +57,28 @@ fn save_key_in_db(key: &str, conn: &MysqlConnection) {
         .unwrap();
 }
 
-pub fn verify_auth_key(key: AuthKey, conn: &MysqlConnection) -> bool {
+pub fn verify_auth_key(key: AuthKey, pool: &State<Pool>) -> bool {
     use crate::db::schema::nonrepeating::dsl::*;
     use diesel::dsl::exists;
     use diesel::dsl::select;
 
     let db_key = "current_auth";
+    let conn = pool.get().unwrap();
 
     let ok = select(exists(
             nonrepeating
                 .filter(id.eq(db_key))
                 .filter(value.eq(key))
         ))
-        .get_result(conn)
+        .get_result(&conn)
         .unwrap();
 
     ok
 }
 
-pub fn generate_auth_key(conn: &MysqlConnection) -> AuthKey {
+pub fn generate_auth_key(pool: &State<Pool>) -> AuthKey {
     let res = random_hex(6);
-    save_key_in_db(&res, conn);
+    save_key_in_db(&res, &pool.get().unwrap());
 
     res
 }

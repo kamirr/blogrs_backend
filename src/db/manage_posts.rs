@@ -1,8 +1,10 @@
 use crate::db::models::{Post, WebPost};
-use diesel::mysql::MysqlConnection;
-use diesel::prelude::*;
+use crate::db::connection::*;
 
-pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u64> {
+use diesel::prelude::*;
+use rocket::State;
+
+pub fn create_post(pool: &State<Pool>, title: &str, body: &str) -> Option<u64> {
     use diesel::sql_types::{Unsigned, BigInt};
     use crate::db::schema::posts::dsl::posts;
     use diesel::select;
@@ -14,13 +16,14 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u6
         body: body.to_string(),
     };
 
+    let conn = pool.get().unwrap();
     let res = diesel::insert_into(posts)
         .values(&new_post)
-        .execute(conn);
+        .execute(&conn);
 
     match res {
         Ok(_) => Some(select(last_insert_id)
-            .load::<u64>(conn)
+            .load::<u64>(&conn)
             .unwrap()
             [0]
         ),
@@ -28,15 +31,16 @@ pub fn create_post(conn: &MysqlConnection, title: &str, body: &str) -> Option<u6
     }
 }
 
-pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new_body: &str) -> Option<u64> {
+pub fn update_post(pool: &State<Pool>, identifier: u64, new_title: &str, new_body: &str) -> Option<u64> {
     use crate::db::schema::posts::dsl::*;
 
+    let conn = pool.get().unwrap();
     let res = diesel::update(posts.find(identifier))
         .set((
             body.eq(new_body),
             title.eq(new_title)
         ))
-        .execute(conn);
+        .execute(&conn);
 
     match res {
         Ok(_) => Some(identifier),
@@ -44,23 +48,25 @@ pub fn update_post(conn: &MysqlConnection, identifier: u64, new_title: &str, new
     }
 }
 
-pub fn delete_post(conn: &MysqlConnection, identifier: u64) -> QueryResult<usize> {
+pub fn delete_post(pool: &State<Pool>, identifier: u64) -> QueryResult<usize> {
     use crate::db::schema::posts::dsl::*;
 
+    let conn = pool.get().unwrap();
     diesel::delete(
             posts.filter(
                 id.eq(identifier)
             )
         )
-        .execute(conn)
+        .execute(&conn)
 }
 
-pub fn fetch_post(conn: &MysqlConnection, identifier: u64) -> Option<Post> {
+pub fn fetch_post(pool: &State<Pool>, identifier: u64) -> Option<Post> {
     use crate::db::schema::posts::dsl::*;
 
+    let conn = pool.get().unwrap();
     let results = posts
         .filter(id.eq(identifier))
-        .load::<Post>(conn);
+        .load::<Post>(&conn);
 
     match results {
         Ok(res) =>
@@ -72,12 +78,13 @@ pub fn fetch_post(conn: &MysqlConnection, identifier: u64) -> Option<Post> {
     }
 }
 
-pub fn all_ids(conn: &MysqlConnection) -> Vec<u64> {
+pub fn all_ids(pool: &State<Pool>) -> Vec<u64> {
     use crate::db::schema::posts::dsl::*;
 
+    let conn = pool.get().unwrap();
     let res = posts
         .select(id)
-        .load::<u64>(conn);
+        .load::<u64>(&conn);
 
     match res {
         Ok(res) => res,
