@@ -4,13 +4,13 @@ use crate::db::models;
 use diesel::r2d2::{PooledConnection, ConnectionManager};
 use diesel::prelude::*;
 
-pub struct Nonrepeating {
+pub struct Special {
     conn: PooledConnection<ConnectionManager<MysqlConnection>>
 }
 
-impl Nonrepeating {
+impl Special {
     pub fn new(pool: &Pool) -> Self {
-        Nonrepeating {
+        Special {
             conn: pool.get().unwrap()
         }
     }

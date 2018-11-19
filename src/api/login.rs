@@ -1,6 +1,6 @@
 use crate::guards::login::LoginGuard;
 use crate::db::connection::Pool;
-use crate::db::nonrepeating;
+use crate::db::special::*;
 use crate::auth::*;
 
 use rocket_contrib::json::{JsonValue};
@@ -28,14 +28,14 @@ fn test_hash(l_hash: String, p_hash: String, data: String) -> bool {
 }
 
 fn test_login(hash: String, pool: &State<Pool>) -> bool {
-    let nr = nonrepeating::Nonrepeating::new(&pool);
+    let sp = Special::new(&pool);
 
-    let login_hash = match nr.get("login") {
+    let login_hash = match sp.get("login") {
         Some(hash) => hash,
         None => return false
     };
 
-    let pass_hash = match nr.get("pass_hash") {
+    let pass_hash = match sp.get("pass_hash") {
         Some(hash) => hash,
         None => return false
     };

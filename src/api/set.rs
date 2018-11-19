@@ -1,7 +1,7 @@
 use crate::guards::value::ValueGuard;
 use crate::guards::auth::AuthGuard;
 use crate::db::connection::Pool;
-use crate::db::nonrepeating::*;
+use crate::db::special::*;
 use crate::auth::*;
 
 use rocket_contrib::json::JsonValue;
@@ -24,8 +24,7 @@ fn set_param(key: AuthKey, db_key: &str, db_value: &str, pool: State<Pool>) -> J
     if !verify_auth_key(key, &pool) {
         status_err("not logged in")
     } else {
-        let nr = Nonrepeating::new(&pool);
-        match nr.set(db_key, db_value) {
+        match Special::new(&pool).set(db_key, db_value) {
             Ok(_) => status_ok("success", &pool),
             Err(_) => status_err("error")
         }
